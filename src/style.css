@@ -29,4 +29,48 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 .game-guide ul{padding-left:19px;margin:0;font-size:12px;line-height:1.9;color:#74856e}
 .game-guide li{padding-left:2px;margin-bottom:9px}
 .game-guide strong{font-weight:600;color:#486340}
+.mobile-only,.tools .mobile-only{display:none}
+.menu-new{width:100%;justify-content:space-between}
+.menu-description{margin:8px 0 18px}
+.menu-actions{display:flex;flex-direction:column;gap:5px;margin:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0}
+.menu-actions button{display:flex;align-items:center;gap:12px;background:none;border:0;padding:12px 4px;text-align:left;color:#45634b;font-size:13px;min-height:44px}
+.modal .menu-save{font-size:10px;margin:8px 0;color:#84917b}
+.hint-explanation{white-space:pre-wrap;overflow-wrap:anywhere}
+
+@media(max-width:600px){
+  #root{min-height:100dvh;display:flex;flex-direction:column}
+  .site-header{height:calc(48px + env(safe-area-inset-top));flex-shrink:0;padding:env(safe-area-inset-top) 16px 0}
+  .brand{font-size:18px;gap:7px}.brand-icon{width:29px;height:29px;border-radius:9px}
+  .header-right{gap:0}.desktop-guide{display:none}.mobile-only{display:flex}.mobile-more{width:44px;height:44px}
+  main{--board-size:min(calc(100vw - 32px),max(252px,calc(100dvh - 312px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));width:100%;max-width:472px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .intro,.tips,.keyboard-guide,footer{display:none}
+  .workspace{display:flex;flex-direction:column;gap:10px;margin:0;width:100%;max-width:none}
+  .game-top{height:32px;min-height:32px;margin:0 0 8px}
+  .difficulty-badge{font-size:12px}.puzzle-label{font-size:10px}
+  .timer .icon-button{width:34px;height:32px}.timer{font-size:13px}
+  .board-container{width:var(--board-size);max-width:100%;margin:0 auto}
+  .board{aspect-ratio:1;display:grid;grid-template-rows:repeat(9,minmax(0,1fr))}
+  .board-row{min-height:0}.cell{aspect-ratio:auto;height:100%;min-height:0;font-size:clamp(20px,6vw,27px)}
+  .notes{font-size:clamp(8px,2.4vw,10px);padding:2px}
+  .board-bottom{margin-top:8px;height:16px;line-height:16px;font-size:9px}
+  .controls{display:flex;flex-direction:column;gap:12px;padding:0}
+  .controls>.control-heading,.controls>h2,.controls>.control-description,.controls>.field-label,.controls>.select-wrap,.controls>.new-game,.controls>.difficulty-description,.controls>.divider,.controls>.input-label,.controls>.advanced-memo,.controls>.hint-button,.controls>.hint-usage,.controls>.save-status,.controls>.restart-link{display:none}
+  .tools{order:1;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;margin:0}
+  .tools button,.tools .mobile-only{display:flex;height:52px;min-height:44px;padding:6px 0;gap:5px}
+  .tools button>span{font-size:10px}.tools small{font-size:7px;margin-left:1px}
+  .number-pad{order:2;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}
+  .number-pad button{height:62px;padding:7px 0 5px;font-size:25px;gap:6px;flex-direction:column;line-height:1.2}
+  .number-pad button>span{position:static;font-size:8px}
+  .number-complete{height:62px;min-height:0}
+  .message{display:none}
+  .mobile-status{margin-top:8px;min-height:32px;width:100%}
+  .mobile-status button{display:flex;align-items:center;gap:6px;width:100%;min-height:32px;padding:5px 9px;background:#edf2e7;border:0;border-radius:6px;color:#75876b;font-size:10px;text-align:left}
+  .mobile-status button>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sheet-backdrop{align-items:flex-end;padding:0;background:#172d2455}
+  .bottom-sheet{width:100%;max-width:600px;max-height:85dvh;border-radius:22px 22px 0 0;padding:26px 24px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px #15302122}
+  .bottom-sheet::before{content:'';position:absolute;top:9px;left:calc(50% - 18px);height:4px;width:36px;background:#d6e0cf;border-radius:4px}
+  .bottom-sheet h2{font-size:21px;margin-top:10px}.bottom-sheet .primary{min-height:44px}
+  .bottom-sheet select{min-height:44px;font-size:14px}
+  .modal:not(.bottom-sheet){max-height:calc(100dvh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

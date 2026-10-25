@@ -7,6 +7,7 @@
 - [LLM 위키](docs/wiki/index.md)
 - [기획](docs/wiki/product.md)
 - [난이도·자동 생성 기준](docs/wiki/difficulty.md)
+- [모바일 한 화면 플레이](docs/wiki/mobile-layout.md)
 - [실행·배포](docs/wiki/deployment.md)
 - [검증 기록](docs/wiki/verification.md)
 - [변경 이력](docs/wiki/changes.md)
