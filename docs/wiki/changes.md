@@ -22,3 +22,4 @@
 ### 검증
 - [추가 테스트](../../tests/details.test.ts): 완료 숫자 차단·재활성화, 전체 후보 메모·undo·저장, 기본 무제한·난이도별 제한·실패 시 무차감.
 - 실행 결과와 실제 배포 확인은 [검증 기록](verification.md)에 남긴다.
+- 배포 완료: 커밋 `fb0de1e`, [Actions 성공](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40170472914), [공개 게임](https://kjk0189-boop.github.io/haru-sudoku/).
