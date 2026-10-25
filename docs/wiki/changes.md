@@ -49,3 +49,4 @@
 - 긴 진행 메시지와 정답 확인 설명은 닫을 수 있는 하단 패널로 표시.
 - 메뉴와 패널의 배경 차단, 타이머 정지, 포커스 복원 처리. 기존 PC 조작과 게임 규칙·저장은 유지.
 - [설계 및 화면 증거](mobile-layout.md), [검증 기록](verification.md).
+- 배포 완료: `ed0e38c`, [Actions 성공](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40202081254). 공개 모바일 화면과 더보기·완료 패널 반영 확인.
