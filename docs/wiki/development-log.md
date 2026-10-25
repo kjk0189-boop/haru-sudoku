@@ -15,3 +15,10 @@
 - 사용자 제공 원격: https://github.com/kjk0189-boop/haru-sudoku (공개, 빈 저장소 확인).
 - codegraph 미제공 환경의 대체 AST import 그래프와 Pages 워크플로 추가.
 - 다음: GitHub 업로드, Pages 활성화 및 실제 배포 주소 확인.
+
+## 2026-10-25 / 첫 공개 배포 완료
+- [원격 저장소](https://github.com/kjk0189-boop/haru-sudoku)에 기획 커밋 `241e2d3`과 첫 구현 커밋 `2e91007` 업로드.
+- Pages 활성화, Actions verify·deploy 성공 및 [공개 게임](https://kjk0189-boop.github.io/haru-sudoku/) 조작 확인.
+- [검증 근거](verification.md), README 플레이 링크와 스크린샷, 후속 작업자를 위한 AGENTS.md 기록.
+- 다음 개발 후보: 일일 도전, 풀이 기법 기반 난이도 평가, 개인 통계, 실제 휴대폰 테스트.
+- 운영 규칙: 이후 구현 변경도 위키와 함께 커밋하고 main에 올리면 자동 검사 후 배포된다.

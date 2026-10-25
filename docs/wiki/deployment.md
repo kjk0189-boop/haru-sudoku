@@ -22,3 +22,11 @@ pnpm graph
 
 Vite의 상대 base(`./`)와 단일 화면 구조를 사용해 저장소 하위 경로를 지원한다.
 원격 주소와 Pages 설정이 없으면 로컬 빌드 성공만으로 배포 완료라고 기록하지 않는다.
+
+## 현재 운영 정보
+- 저장소: https://github.com/kjk0189-boop/haru-sudoku
+- 게임: https://kjk0189-boop.github.io/haru-sudoku/
+- 배포 브랜치: main
+- Pages Source: GitHub Actions (workflow)
+- [첫 배포 성공 기록](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40169714591)
+- 소스·위키 변경을 main에 push하면 자동 재검증·재배포된다. 검증 실패 시 새 배포가 진행되지 않는다.
