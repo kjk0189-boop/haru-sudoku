@@ -30,3 +30,4 @@ Vite의 상대 base(`./`)와 단일 화면 구조를 사용해 저장소 하위 
 - Pages Source: GitHub Actions (workflow)
 - [첫 배포 성공 기록](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40169714591)
 - 소스·위키 변경을 main에 push하면 자동 재검증·재배포된다. 검증 실패 시 새 배포가 진행되지 않는다.
+- 네 단계 자동 생성 배포: [2026-10-25 실행](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40172499301). 실제 공개 경로에서 Worker 생성 성공 확인. 이전 탭이 열린 경우 새로고침하면 최신 코드로 전환된다.

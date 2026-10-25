@@ -33,3 +33,4 @@
 - 기존 저장 형식·진행 상황을 유지하고, 임의 ID나 기존 문제 위장으로 검증을 우회하는 저장값은 거절.
 - 네 난이도 힌트는 모두 무제한 유지. [힌트 정책](../../src/policy.ts)에 전문가 설정 추가.
 - [생성 실측](generation-audit.json)과 테스트·브라우저·배포 결과는 [검증 기록](verification.md)에 기록.
+- 배포 완료: 커밋 `1b169ee`, [Actions 검사·배포 성공](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40172499301). 공개 페이지에서 실제 Worker 생성 확인.
