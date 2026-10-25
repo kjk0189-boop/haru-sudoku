@@ -9,6 +9,7 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 - App.tsx: 게임 화면, 접근성, 시간·저장·모달
 - session.ts: 게임 상태 변경, 실행 취소, 저장 데이터 검증
 - game.ts: 문제 묶음, 후보·충돌·완성·유일해·힌트
+- policy.ts: 난이도별 힌트 제한 정책
 
 ## import 연결
 | 소스 | 의존 대상 |
@@ -21,4 +22,6 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [main.tsx](../../src/main.tsx) | `react-dom/client` |
 | [main.tsx](../../src/main.tsx) | [./App](../../src/App.tsx) |
 | [main.tsx](../../src/main.tsx) | [./style.css](../../src/style.css) |
+| [policy.ts](../../src/policy.ts) | [./game](../../src/game.ts) |
 | [session.ts](../../src/session.ts) | [./game](../../src/game.ts) |
+| [session.ts](../../src/session.ts) | [./policy](../../src/policy.ts) |

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Check, ChevronDown, Clock3, Eraser, Leaf, Lightbulb, Pause, Pencil, Play, RotateCcw, Settings2, ShieldCheck, Sparkles, Undo2, X } from 'lucide-react';
-import { conflicts, findHint, isComplete, type Difficulty } from './game';
-import { createSession, enterValue, puzzleFor, restoreSession, STORAGE_KEY, undo, type Session } from './session';
+import { conflicts, isComplete, type Difficulty } from './game';
+import { applyHint, completedDigits, createSession, enterValue, fillAllNotes, puzzleFor, remainingHints, restoreSession, STORAGE_KEY, undo, type Session } from './session';
 
 const LABELS: Record<Difficulty, string> = { easy: '쉬움', medium: '보통', hard: '어려움' };
 const time = (seconds: number) => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
@@ -15,7 +15,6 @@ export default function App() {
   const [selected, setSelected] = useState<number | null>(null);
   const [memo, setMemo] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [showErrors, setShowErrors] = useState(true);
   const [settings, setSettings] = useState(false);
   const [help, setHelp] = useState(false);
   const [dialog, setDialog] = useState<'new' | 'restart' | null>(null);
@@ -26,6 +25,8 @@ export default function App() {
   const puzzle = puzzleFor(session);
   const complete = isComplete(session.board);
   const errors = conflicts(session.board);
+  const fullDigits = completedDigits(session.board);
+  const hintsLeft = remainingHints(session);
   const filled = session.board.filter(Boolean).length;
   const selectedValue = selected === null ? 0 : session.board[selected];
   useEffect(() => {
@@ -45,17 +46,24 @@ export default function App() {
   function input(value: number) {
     if (selected === null || paused || complete) return;
     if (puzzle.givens[selected]) { setMessage('처음 주어진 숫자는 바꿀 수 없어요.'); return; }
+    if (value && session.board[selected] !== value && fullDigits.has(value)
+      && !(memo && session.notes[selected].includes(value))) { setMessage(`숫자 ${value}: 이미 9개가 채워졌어요. 숫자를 지우거나 되돌리면 다시 입력할 수 있어요.`); return; }
     setSession(s => enterValue(s, selected, value, memo && value !== 0));
     setMessage(memo && value ? '후보 숫자를 메모했어요.' : value ? '좋아요. 천천히 이어가세요.' : '선택한 칸을 지웠어요.');
   }
   function hint() {
     if (paused || complete) return;
-    if (session.board.some((v, i) => v && v !== puzzle.solution[i])) { setMessage('입력한 숫자 중 정답과 맞지 않는 숫자가 있어요. 먼저 다시 살펴보세요.'); return; }
-    const next = findHint(session.board, puzzle.givens);
-    if (!next) { setMessage('기본 단일 후보 기법으로 설명할 수 있는 힌트를 찾지 못했어요. 후보 메모를 살펴보세요.'); return; }
-    setSelected(next.index);
-    setSession(s => ({ ...enterValue(s, next.index, next.value), hints: s.hints + 1 }));
-    setMessage(next.explanation);
+    const result = applyHint(session);
+    if (result.index !== undefined) setSelected(result.index);
+    setSession(result.session);
+    setMessage(result.message);
+  }
+  function advancedMemo() {
+    if (paused || complete) return;
+    if (errors.size) { setMessage('중복된 숫자를 먼저 수정하면 모든 후보를 메모할 수 있어요.'); return; }
+    const next = fillAllNotes(session);
+    setSession(next);
+    setMessage(next === session ? '모든 빈칸의 후보 메모가 이미 최신 상태예요.' : '모든 빈칸에 현재 가능한 후보를 메모했어요. 되돌리기로 이전 메모를 복원할 수 있어요.');
   }
   function start() {
     if (dialog === 'restart') setSession({ ...createSession(puzzle.difficulty), puzzleId: puzzle.id, board: [...puzzle.givens] });
@@ -110,7 +118,7 @@ export default function App() {
               {Array.from({length:9},(_,r) => <div role="row" className="board-row" key={r}>{session.board.slice(r*9,r*9+9).map((v,c) => {
                 const i=r*9+c, sr=selected===null?-1:Math.floor(selected/9), sc=selected===null?-1:selected%9;
                 const related=selected!==null&&(sr===r||sc===c||(Math.floor(sr/3)===Math.floor(r/3)&&Math.floor(sc/3)===Math.floor(c/3)));
-                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&showErrors&&errors.has(i)} disabled={paused} aria-label={`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&showErrors&&errors.has(i)?', 숫자 중복':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${showErrors&&errors.has(i)?'conflict':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
+                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&errors.has(i)} disabled={paused} aria-label={`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&errors.has(i)?', 숫자 중복':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${errors.has(i)?'conflict':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
                   {!paused&&(v||<span className="notes">{Array.from({length:9},(_,n)=><span key={n}>{session.notes[i].includes(n+1)?n+1:''}</span>)}</span>)}
                 </button>;
               })}</div>)}
@@ -126,9 +134,11 @@ export default function App() {
           <button className="primary new-game" onClick={()=>setDialog('new')}>새 게임 시작<ArrowRight size={17}/></button>
           <div className="divider"/>
           <div className="input-label"><span className="field-label">숫자 입력</span><span>{memo?'메모 모드 ON':'칸을 선택한 후 입력'}</span></div>
-          <div className="number-pad">{Array.from({length:9},(_,n)=><button key={n} disabled={paused||complete} aria-label={`숫자 ${n+1} 입력`} onClick={()=>input(n+1)} className={selectedValue===n+1?'active':''}>{n+1}<span>{Math.max(0,9-session.board.filter(v=>v===n+1).length)}</span></button>)}</div>
+          <div className="number-pad">{Array.from({length:9},(_,n)=>fullDigits.has(n+1)?<span key={n} className="number-complete" aria-hidden="true"/>:<button key={n} disabled={paused||complete} aria-label={`숫자 ${n+1} 입력`} onClick={()=>input(n+1)} className={selectedValue===n+1?'active':''}>{n+1}<span>{Math.max(0,9-session.board.filter(v=>v===n+1).length)}</span></button>)}</div>
           <div className="tools"><button disabled={paused||complete||!session.history.length} onClick={()=>setSession(undo)}><Undo2 size={20}/><span>되돌리기</span></button><button disabled={paused||complete} onClick={()=>input(0)}><Eraser size={20}/><span>지우기</span></button><button disabled={paused||complete} aria-pressed={memo} className={memo?'tool-active':''} onClick={()=>setMemo(v=>!v)}><Pencil size={20}/><span>메모 <small>{memo?'ON':'OFF'}</small></span></button></div>
-          <button className="hint-button" disabled={paused||complete} onClick={hint}><span><Lightbulb size={19}/>조금의 도움이 필요할 때</span><span>힌트<ArrowRight size={15}/></span></button>
+          <button className="advanced-memo" disabled={paused||complete} onClick={advancedMemo}><span><Sparkles size={18}/>고급 메모</span><span>모든 후보 한 번에 채우기</span></button>
+          <button className="hint-button" disabled={paused||complete||hintsLeft===0} onClick={hint}><span><Lightbulb size={19}/>조금의 도움이 필요할 때</span><span>{hintsLeft===null?'힌트 무제한':`힌트 ${hintsLeft}회 남음`}<ArrowRight size={15}/></span></button>
+          <p className="hint-usage">이번 게임에서 힌트 {session.hints}회 사용</p>
           <div className="save-status">{saveFailed?<><X size={14}/>저장 불가 · 브라우저 저장 설정을 확인하세요</>:<><ShieldCheck size={14}/>진행 상황이 이 브라우저에 자동 저장돼요</>}</div>
           <button className="restart-link" onClick={()=>setDialog('restart')}><RotateCcw size={13}/>이 문제 처음부터 풀기</button>
         </aside>
@@ -139,7 +149,7 @@ export default function App() {
     </main>
     <footer><span className="footer-brand">하루 스도쿠<span>.</span></span><p>오늘도, 한 칸만큼의 여유.</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
     {blocking&&<div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label="닫기" onClick={()=>{setDialog(null);setSettings(false);setHelp(false);}}><X size={20}/></button>
-      {dialog?<><span className="modal-icon"><Leaf size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2><p>{dialog==='restart'?'현재 문제의 입력, 시간, 메모가 초기화됩니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 현재 진행 상황은 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<><h2 id="modal-title">게임 설정</h2><label className="setting-row"><span>중복된 숫자 표시</span><input type="checkbox" checked={showErrors} onChange={e=>setShowErrors(e.target.checked)}/></label><p>행·열·상자에서 겹치는 숫자를 표시합니다. 정답과 다른 모든 입력을 표시하는 기능은 아닙니다.</p><p>진행 기록은 이 브라우저에 저장됩니다. 난이도는 단서 수에 따른 초기 분류이며 풀이 기법에 따른 정밀 평가는 준비 중이에요.</p></>:<><h2 id="modal-title">한 칸씩, 차근차근</h2><p>각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.</p><p>빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.</p><p>힌트는 단일 후보와 숨은 단일 후보를 설명하고 한 칸을 채워줘요. 어려운 기법이 필요하면 힌트를 찾지 못할 수 있어요.</p><p>방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>알겠어요</button></>}
+      {dialog?<><span className="modal-icon"><Leaf size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2><p>{dialog==='restart'?'현재 문제의 입력, 시간, 메모가 초기화됩니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 현재 진행 상황은 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<><h2 id="modal-title">게임 설정</h2><p><strong>중복 숫자는 항상 표시해요.</strong> 행·열·상자에서 겹치는 숫자를 바로 확인할 수 있어요.</p><p>행·열·상자에서 겹치는 숫자를 표시합니다. 정답과 다른 모든 입력을 표시하는 기능은 아닙니다.</p><p>진행 기록은 이 브라우저에 저장됩니다. 난이도는 단서 수에 따른 초기 분류이며 풀이 기법에 따른 정밀 평가는 준비 중이에요.</p></>:<><h2 id="modal-title">한 칸씩, 차근차근</h2><p>각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.</p><p>빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.</p><p>고급 메모는 현재 보드를 기준으로 모든 빈칸의 후보를 한 번에 새로 채워요. 기존 메모는 교체되며 되돌리기로 복원할 수 있어요. 숫자를 입력한 뒤 다시 누르면 후보가 갱신돼요.</p><p>9개가 채워진 숫자는 입력판에서 사라져요. 지우거나 되돌리면 다시 나타나요.</p><p>힌트는 단일 후보와 숨은 단일 후보를 설명하고 한 칸을 채워줘요. 어려운 기법이 필요하면 힌트를 찾지 못할 수 있어요.</p><p>방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>알겠어요</button></>}
     </section></div>}
   </>;
 }

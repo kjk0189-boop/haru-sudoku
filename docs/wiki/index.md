@@ -8,6 +8,7 @@
 - [코드 연결 구조](code-map.md): 모듈의 책임과 의존 관계
 - [검증 기록](verification.md): 실행한 검사, 결과, 미검증 사유
 - [개발 기록](development-log.md): 날짜별 작업과 남은 일
+- [변경 이력](changes.md): 사용자 요청별 동작 변경과 설정 위치
 - [배포 안내](deployment.md): 로컬 실행, GitHub Pages 배포
 
 ## LLM 기록 규칙
