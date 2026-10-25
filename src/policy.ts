@@ -7,4 +7,5 @@ export const HINT_LIMITS: HintLimits = {
   easy: null,
   medium: null,
   hard: null,
+  expert: null,
 };

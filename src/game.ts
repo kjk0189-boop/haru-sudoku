@@ -1,4 +1,4 @@
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export interface Puzzle {
   id: string;
@@ -62,32 +62,46 @@ export function isComplete(board: number[]): boolean {
 /** Counts up to limit solutions without mutating the caller's board. */
 export function countSolutions(board: number[], limit = 2): number {
   if (!validBoard(board) || !Number.isInteger(limit) || limit < 1 || conflicts(board).size > 0) return 0;
-  const work = board.slice();
-  function search(remaining: number): number {
-    let index = -1;
-    let options: number[] = [];
-    for (let i = 0; i < 81; i++) {
-      if (work[i] !== 0) continue;
-      const used = new Set(PEERS[i].map(j => work[j]));
-      const values = DIGITS.filter(value => !used.has(value));
-      if (values.length === 0) return 0;
-      if (index === -1 || values.length < options.length) {
-        index = i;
-        options = values;
-        if (values.length === 1) break;
+  const rows = new Uint16Array(9), columns = new Uint16Array(9), boxes = new Uint16Array(9);
+  const empty: number[] = [];
+  for (let i = 0; i < 81; i++) {
+    if (board[i] === 0) { empty.push(i); continue; }
+    const row = Math.floor(i / 9), column = i % 9;
+    const box = Math.floor(row / 3) * 3 + Math.floor(column / 3);
+    const bit = 1 << board[i];
+    rows[row] |= bit; columns[column] |= bit; boxes[box] |= bit;
+  }
+  // MRV search uses nine-bit masks, avoiding per-node Set/array allocations.
+  function search(depth: number, remaining: number): number {
+    if (depth === empty.length) return 1;
+    let chosen = depth, options = 0, smallest = 10;
+    for (let j = depth; j < empty.length; j++) {
+      const index = empty[j], row = Math.floor(index / 9), column = index % 9;
+      const box = Math.floor(row / 3) * 3 + Math.floor(column / 3);
+      const mask = 0x3fe & ~(rows[row] | columns[column] | boxes[box]);
+      if (mask === 0) return 0;
+      let count = 0;
+      for (let bits = mask; bits; bits &= bits - 1) count++;
+      if (count < smallest) {
+        chosen = j; options = mask; smallest = count;
+        if (count === 1) break;
       }
     }
-    if (index === -1) return 1;
+    [empty[depth], empty[chosen]] = [empty[chosen], empty[depth]];
+    const index = empty[depth], row = Math.floor(index / 9), column = index % 9;
+    const box = Math.floor(row / 3) * 3 + Math.floor(column / 3);
     let total = 0;
-    for (const value of options) {
-      work[index] = value;
-      total += search(remaining - total);
-      if (total >= remaining) break;
+    while (options && total < remaining) {
+      const bit = options & -options;
+      options &= options - 1;
+      rows[row] |= bit; columns[column] |= bit; boxes[box] |= bit;
+      total += search(depth + 1, remaining - total);
+      rows[row] &= ~bit; columns[column] &= ~bit; boxes[box] &= ~bit;
     }
-    work[index] = 0;
+    [empty[depth], empty[chosen]] = [empty[chosen], empty[depth]];
     return total;
   }
-  return search(limit);
+  return search(0, limit);
 }
 
 /** Uses naked and hidden singles only. Never reveals a guessed answer. */

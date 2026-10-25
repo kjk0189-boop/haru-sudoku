@@ -18,4 +18,10 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 .advanced-memo>span:last-child{font-size:9px;color:#7b8c74}
 .hint-usage{text-align:right;color:#819178;font-size:9px;margin:7px 0 0}
 @media(max-width:600px){.advanced-memo,.hint-usage{grid-column:1/-1}.advanced-memo{margin-bottom:0}.hint-usage{margin:0}.number-complete{min-height:54px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.difficulty-description{font-size:10px;color:#7f8f77;line-height:1.7;margin:8px 0 0;min-height:17px}
+.generation-overlay h2{font-size:20px;text-align:center}
+.generation-overlay p{text-align:center;line-height:1.8;padding:0 15px}
+.generation-spinner{width:40px;height:40px;border:3px solid #d5e5cd;border-top-color:#236b54;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.difficulty-description{grid-column:1/-1;margin:0}.generation-overlay h2{font-size:17px}.generation-overlay p{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

@@ -1,16 +1,22 @@
-import { candidates, conflicts, findHint, getPuzzle, isComplete, PUZZLES, type Difficulty, type Puzzle } from './game';
+import { candidates, conflicts, countSolutions, getPuzzle, isComplete, PUZZLES, type Difficulty, type Puzzle } from './game';
 import { HINT_LIMITS, type HintLimits } from './policy';
+import { analyze, findLogicalHint, type Rating } from './logic';
 
 export interface Snapshot { board: number[]; notes: number[][] }
 export interface Session extends Snapshot {
   version: 1; puzzleId: string; elapsed: number; hints: number; history: Snapshot[];
+  puzzle?: Puzzle;
+  certificate?: Rating;
 }
 export const STORAGE_KEY = 'haru-sudoku:v1';
-export function createSession(difficulty: Difficulty, excludeId?: string): Session {
-  const puzzle = getPuzzle(difficulty, excludeId);
-  return { version: 1, puzzleId: puzzle.id, board: [...puzzle.givens], notes: Array.from({ length: 81 }, () => []), elapsed: 0, hints: 0, history: [] };
+/** String input is the legacy catalog API; all new game tiers pass a certified puzzle snapshot. */
+export function createSession(difficulty: Exclude<Difficulty, 'expert'> | Puzzle, excludeId?: string): Session {
+  const source = typeof difficulty === 'string' ? getPuzzle(difficulty, excludeId) : difficulty;
+  const puzzle: Puzzle = { id: source.id, difficulty: source.difficulty, givens: [...source.givens], solution: [...source.solution] };
+  return { version: 1, puzzleId: puzzle.id, puzzle, ...(puzzle.id.startsWith('gen-') ? { certificate: analyze(puzzle.givens) } : {}), board: [...puzzle.givens], notes: Array.from({ length: 81 }, () => []), elapsed: 0, hints: 0, history: [] };
 }
-export function puzzleFor(session: Session): Puzzle { return PUZZLES.find(p => p.id === session.puzzleId)!; }
+export function puzzleFor(session: Session): Puzzle { return session.puzzle ?? PUZZLES.find(p => p.id === session.puzzleId)!; }
+export function restartSession(session: Session): Session { return createSession(puzzleFor(session)); }
 const integer = (n: unknown, max: number) => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= max;
 function validSnapshot(value: unknown, puzzle: Puzzle): value is Snapshot {
   if (!value || typeof value !== 'object') return false;
@@ -22,9 +28,27 @@ export function restoreSession(raw: string | null): Session | null {
   try {
     if (!raw) return null;
     const value = JSON.parse(raw) as Session;
-    const puzzle = PUZZLES.find(p => p.id === value?.puzzleId);
+    let puzzle: Puzzle | undefined;
+    let certificate: Rating | undefined;
+    if (value?.puzzle !== undefined) {
+      const p = value.puzzle;
+      const validDigits = (board: unknown): board is number[] => Array.isArray(board) && board.length === 81 && board.every(v => integer(v, 9));
+      if (!p || typeof p.id !== 'string' || p.id.length > 160 || p.id !== value.puzzleId
+        || !['easy','medium','hard','expert'].includes(p.difficulty) || !validDigits(p.givens) || !validDigits(p.solution)
+        || !isComplete(p.solution) || !p.givens.some(Boolean) || p.givens.some((v, i) => v && v !== p.solution[i])) return null;
+      const legacy = PUZZLES.find(item => item.id === p.id);
+      if (legacy) {
+        if (p.difficulty !== legacy.difficulty || p.givens.some((v, i) => v !== legacy.givens[i]) || p.solution.some((v, i) => v !== legacy.solution[i])) return null;
+      } else {
+        if (!/^gen-\d+-[0-9]{81}$/.test(p.id) || !p.id.endsWith(`-${p.givens.join('')}`)) return null;
+        certificate = analyze(p.givens);
+        if (!certificate.solved || certificate.difficulty !== p.difficulty || certificate.solution.some((v, i) => v !== p.solution[i]) || countSolutions(p.givens) !== 1) return null;
+      }
+      puzzle = { id: p.id, difficulty: p.difficulty, givens: p.givens, solution: p.solution };
+    } else puzzle = PUZZLES.find(p => p.id === value?.puzzleId);
     if (!puzzle || value.version !== 1 || !validSnapshot(value, puzzle) || !integer(value.elapsed, 31536000) || !integer(value.hints, 1000000)
       || !Array.isArray(value.history) || value.history.length > 100 || !value.history.every(s => validSnapshot(s, puzzle))) return null;
+    if (certificate) return { ...value, certificate };
     return value;
   } catch { return null; }
 }
@@ -72,8 +96,8 @@ export function applyHint(session: Session, limits: HintLimits = HINT_LIMITS): {
   if (session.board.some((value, i) => value && value !== puzzle.solution[i])) {
     return { session, message: '입력한 숫자 중 정답과 맞지 않는 숫자가 있어요. 먼저 다시 살펴보세요.' };
   }
-  const hint = findHint(session.board, puzzle.givens);
-  if (!hint) return { session, message: '기본 단일 후보 기법으로 설명할 수 있는 힌트를 찾지 못했어요. 후보 메모를 살펴보세요.' };
+  const hint = findLogicalHint(session.board, puzzle.givens);
+  if (!hint) return { session, message: '지원하는 논리 기법으로 다음 칸을 확정하지 못했어요. 입력과 후보 메모를 다시 살펴보세요.' };
   const next = enterValue(session, hint.index, hint.value);
   if (next === session) return { session, message: '이 칸에는 힌트를 적용할 수 없어요.' };
   return { session: { ...next, hints: session.hints + 1 }, message: hint.explanation, index: hint.index };

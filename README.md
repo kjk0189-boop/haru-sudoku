@@ -6,6 +6,7 @@
 
 - [LLM 위키](docs/wiki/index.md)
 - [기획](docs/wiki/product.md)
+- [난이도·자동 생성 기준](docs/wiki/difficulty.md)
 - [실행·배포](docs/wiki/deployment.md)
 - [검증 기록](docs/wiki/verification.md)
 - [변경 이력](docs/wiki/changes.md)
@@ -15,6 +16,6 @@
 
 `pnpm install` 후 `pnpm dev`로 실행한다. `pnpm test`, `pnpm build`로 검증한다.
 
-진행 기록은 해당 브라우저에만 저장된다. 첫 버전의 난이도 분류는 잠정값이다.
+쉬움·보통·어려움·전문가 문제를 무작위로 생성하고 유일해와 논리 풀이로 검증한다. 생성·힌트는 단일 후보부터 X-Wing까지 지원하며, 기록은 해당 브라우저에만 저장된다. 등급 경계는 실제 플레이를 바탕으로 보정할 초기 기준이다.
 
-![하루 스도쿠 화면](docs/assets/details-2026-10-25.png)
+![하루 스도쿠 화면](docs/assets/generation-2026-10-25.png)
