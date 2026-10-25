@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Clock3, Eraser, Leaf, Lightbulb, Pause, Pencil, Play, RotateCcw, Settings2, ShieldCheck, Sparkles, Undo2, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Clock3, Eraser, Leaf, Lightbulb, Pause, Pencil, Play, RotateCcw, BookOpen, ShieldCheck, Sparkles, Undo2, X } from 'lucide-react';
 import { conflicts, isComplete, type Difficulty } from './game';
 import { requestPuzzle, readRecent, rememberPuzzle, RECENT_KEY } from './generator-client';
 import { STARTER_PUZZLE } from './starter';
@@ -138,7 +138,7 @@ export default function App() {
     return () => { document.removeEventListener('keydown', handler); prior?.focus(); };
   }, [blocking]);
   return <>
-    <header className="site-header"><a className="brand" href="./" aria-label="하루 스도쿠 홈"><span className="brand-icon"><Leaf size={22} /></span>하루 스도쿠<span className="brand-dot">.</span></a><div className="header-right"><span className="header-tag">하루의 작은 몰입</span><button className="icon-button" aria-label="게임 설정" onClick={() => setSettings(true)}><Settings2 size={20}/></button></div></header>
+    <header className="site-header"><a className="brand" href="./" aria-label="하루 스도쿠 홈"><span className="brand-icon"><Leaf size={22} /></span>하루 스도쿠<span className="brand-dot">.</span></a><div className="header-right"><span className="header-tag">하루의 작은 몰입</span><button className="icon-button" aria-label="게임 안내" onClick={() => setSettings(true)}><BookOpen size={20}/></button></div></header>
     <main onKeyDown={keydown}>
       <section className="intro"><div className="eyebrow"><span/> A LITTLE PAUSE, A CLEARER MIND</div><h1>복잡한 하루에,<br className="mobile-break"/> 단순한 즐거움.</h1><p>숫자 하나에 집중하다 보면, 마음도 조금 가벼워질 거예요.</p></section>
       <div className="workspace">
@@ -169,8 +169,8 @@ export default function App() {
           <div className="input-label"><span className="field-label">숫자 입력</span><span>{memo?'메모 모드 ON':'칸을 선택한 후 입력'}</span></div>
           <div className="number-pad">{Array.from({length:9},(_,n)=>fullDigits.has(n+1)?<span key={n} className="number-complete" aria-hidden="true"/>:<button key={n} disabled={generating||paused||complete} aria-label={`숫자 ${n+1} 입력`} onClick={()=>input(n+1)} className={selectedValue===n+1?'active':''}>{n+1}<span>{Math.max(0,9-session.board.filter(v=>v===n+1).length)}</span></button>)}</div>
           <div className="tools"><button disabled={generating||paused||complete||!session.history.length} onClick={()=>setSession(undo)}><Undo2 size={20}/><span>되돌리기</span></button><button disabled={generating||paused||complete} onClick={()=>input(0)}><Eraser size={20}/><span>지우기</span></button><button disabled={generating||paused||complete} aria-pressed={memo} className={memo?'tool-active':''} onClick={()=>setMemo(v=>!v)}><Pencil size={20}/><span>메모 <small>{memo?'ON':'OFF'}</small></span></button></div>
-          <button className="advanced-memo" disabled={generating||paused||complete} onClick={advancedMemo}><span><Sparkles size={18}/>고급 메모</span><span>모든 후보 한 번에 채우기</span></button>
-          <button className="hint-button" disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><span><Lightbulb size={19}/>조금의 도움이 필요할 때</span><span>{hintsLeft===null?'힌트 무제한':`힌트 ${hintsLeft}회 남음`}<ArrowRight size={15}/></span></button>
+          <button className="advanced-memo" disabled={generating||paused||complete} onClick={advancedMemo}><span><Sparkles size={18}/>고급 메모</span><span>자동 숫자 채우기</span></button>
+          <button className="hint-button" disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><span><Lightbulb size={19}/>랜덤 정답 확인하기</span><span>{hintsLeft===null?'힌트 무제한':`힌트 ${hintsLeft}회 남음`}<ArrowRight size={15}/></span></button>
           <p className="hint-usage">이번 게임에서 힌트 {session.hints}회 사용</p>
           <div className="save-status">{saveFailed?<><X size={14}/>저장 불가 · 브라우저 저장 설정을 확인하세요</>:<><ShieldCheck size={14}/>진행 상황이 이 브라우저에 자동 저장돼요</>}</div>
           <button disabled={generating} className="restart-link" onClick={()=>setDialog('restart')}><RotateCcw size={13}/>이 문제 처음부터 풀기</button>
@@ -181,8 +181,26 @@ export default function App() {
       <p className="keyboard-guide">키보드로도 편하게 <kbd>1–9</kbd> 숫자 입력 <span>·</span> <kbd>↑ ↓ ← →</kbd> 이동 <span>·</span> <kbd>N</kbd> 메모</p>
     </main>
     <footer><span className="footer-brand">하루 스도쿠<span>.</span></span><p>오늘도, 한 칸만큼의 여유.</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
-    {blocking&&<div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label="닫기" onClick={()=>{setDialog(null);setSettings(false);setHelp(false);}}><X size={20}/></button>
-      {dialog?<><span className="modal-icon"><Leaf size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2><p>{dialog==='restart'?'현재 문제의 입력, 시간, 메모가 초기화됩니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 현재 진행 상황은 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<><h2 id="modal-title">게임 설정</h2><p><strong>중복 숫자는 항상 표시해요.</strong> 행·열·상자에서 겹치는 숫자를 바로 확인할 수 있어요.</p><p>행·열·상자에서 겹치는 숫자를 표시합니다. 정답과 다른 모든 입력을 표시하는 기능은 아닙니다.</p><p>진행 기록은 이 브라우저에 저장됩니다. 새 문제는 유일해와 논리 풀이를 검증해 네 단계로 분류해요. 쉬움·보통은 기본 기법의 탐색 부담, 어려움은 후보 제거, 전문가는 X-Wing을 기준으로 해요. 이전 버전의 저장된 문제는 기존 난이도로 이어집니다.</p></>:<><h2 id="modal-title">한 칸씩, 차근차근</h2><p>각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.</p><p>빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.</p><p>고급 메모는 현재 보드를 기준으로 모든 빈칸의 후보를 한 번에 새로 채워요. 기존 메모는 교체되며 되돌리기로 복원할 수 있어요. 숫자를 입력한 뒤 다시 누르면 후보가 갱신돼요.</p><p>9개가 채워진 숫자는 입력판에서 사라져요. 지우거나 되돌리면 다시 나타나요.</p><p>힌트는 단일 후보, 후보 잠금, 후보 쌍, X-Wing까지 순서대로 설명하고 한 칸을 채워줘요. 잘못 입력한 숫자가 있으면 먼저 수정을 안내해요.</p><p>방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>알겠어요</button></>}
+    {blocking&&<div className="modal-backdrop"><section className={`modal ${settings?'game-guide':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label="닫기" onClick={()=>{setDialog(null);setSettings(false);setHelp(false);}}><X size={20}/></button>
+      {dialog?<><span className="modal-icon"><Leaf size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2><p>{dialog==='restart'?'현재 문제의 입력, 시간, 메모가 초기화됩니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 현재 진행 상황은 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<>
+        <h2 id="modal-title">게임 안내</h2>
+        <h3>기본 규칙</h3>
+        <ul>
+          <li><strong>격자 구조</strong>: 전체 9×9 격자는 81개의 칸으로 이루어져 있으며, 3×3 크기의 작은 정사각형 9개로 나뉩니다.</li>
+          <li><strong>행(가로줄) 규칙</strong>: 1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.</li>
+          <li><strong>열(세로줄) 규칙</strong>: 1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.</li>
+          <li><strong>3×3 블록 규칙</strong>: 각각의 3×3 작은 박스 안에도 1부터 9까지의 숫자가 중복 없이 들어가야 합니다.</li>
+        </ul>
+        <h3>주요 풀이 전략</h3>
+        <ul>
+          <li><strong>소거법</strong>: 가로, 세로, 3×3 블록을 확인해 이미 사용된 숫자를 제외하고 들어갈 수 있는 후보를 좁혀나갑니다.</li>
+          <li><strong>네이키드 싱글(확실한 싱글)</strong>: 다른 가능성이 전혀 없고 오직 하나의 숫자만 들어갈 수 있는 칸을 찾아 채웁니다.</li>
+          <li><strong>메모 기능</strong>: 헷갈리는 칸에는 가능한 후보 숫자를 작게 적어두어 중복을 방지합니다.</li>
+          <li><strong>고급 메모 기능</strong>: 자동으로 숫자를 적어줍니다.</li>
+        </ul>
+        <h3>게임 진행 안내</h3>
+        <ul><li>진행 기록은 게임 브라우저에 자동 저장됩니다.</li></ul>
+      </>:<><h2 id="modal-title">한 칸씩, 차근차근</h2><p>각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.</p><p>빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.</p><p>고급 메모는 현재 보드를 기준으로 모든 빈칸의 후보를 한 번에 새로 채워요. 기존 메모는 교체되며 되돌리기로 복원할 수 있어요. 숫자를 입력한 뒤 다시 누르면 후보가 갱신돼요.</p><p>9개가 채워진 숫자는 입력판에서 사라져요. 지우거나 되돌리면 다시 나타나요.</p><p>힌트는 단일 후보, 후보 잠금, 후보 쌍, X-Wing까지 순서대로 설명하고 한 칸을 채워줘요. 잘못 입력한 숫자가 있으면 먼저 수정을 안내해요.</p><p>방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>알겠어요</button></>}
     </section></div>}
   </>;
 }

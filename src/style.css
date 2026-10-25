@@ -24,4 +24,9 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 .generation-spinner{width:40px;height:40px;border:3px solid #d5e5cd;border-top-color:#236b54;border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.difficulty-description{grid-column:1/-1;margin:0}.generation-overlay h2{font-size:17px}.generation-overlay p{font-size:11px}}
+.game-guide{width:520px}
+.game-guide h3{font-size:14px;margin:24px 0 10px;color:#365b43}
+.game-guide ul{padding-left:19px;margin:0;font-size:12px;line-height:1.9;color:#74856e}
+.game-guide li{padding-left:2px;margin-bottom:9px}
+.game-guide strong{font-weight:600;color:#486340}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

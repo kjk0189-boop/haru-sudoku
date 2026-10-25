@@ -76,3 +76,10 @@
 - 구현 커밋 `1b169ee`의 [Actions 40172499301](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40172499301): verify·deploy 모두 성공. 원격 pnpm frozen install, 43개 테스트, 타입/빌드, 그래프 최신성 검사 통과.
 - 공개 주소에서 네 단계 선택과 기존 저장 이어하기 확인. 진행 입력이 없는 보드에서 새 어려움 게임을 시작해 실제 배포된 Worker로 새 문제 생성 성공 안내 확인.
 - 공개 브라우저 error 로그 0건. GitHub Pages 저장소 하위 경로에서 Worker 자산 로딩과 응답이 정상임을 확인.
+
+## 2026-10-25 / 안내 문구 검증
+- `node node_modules/typescript/bin/tsc -b`, `node node_modules/vite/bin/vite.js build`, `node scripts/codegraph.mjs`, `git diff --check`: 통과. 그래프는 10개 모듈·23개 연결로 동일.
+- 실제 브라우저에서 ‘게임 안내’ 열기와 사용자 제공 본문 전체 3개 섹션·9개 항목 표시 확인. 버튼 접근성 이름도 새 문구로 표시.
+- 데스크톱 안내창 시각 확인. 390×844에서 안내창 clientWidth와 scrollWidth 모두 327px로 가로 넘침 없음, 본문과 닫기 버튼 표시 확인.
+- 게임 규칙·저장·문제 생성 로직 변경 없음. 단순 문구 변경을 위한 별도 자동 테스트는 추가하지 않으며 기존 43개 검사는 배포 워크플로에서 실행한다.
+- 실제 휴대폰은 제공되지 않아 미검증. 모바일 너비 시뮬레이션으로 배치를 확인했다.
