@@ -95,3 +95,31 @@
   .lobby-welcome p { font-size: 12px; }.lobby-daily-copy small { font-size: 10px; }.lobby-stat>svg { display: none; }
   .lobby-total-time { flex-wrap: wrap; }.lobby-total-time>span:last-child { width: 100%; text-align: right; }
 }
+
+/* Completed, in progress, and today's marker remain distinct together. */
+.lobby-day-complete { background: var(--error); color: #fff; }
+.lobby-day-complete>svg { color: #fff; }
+.lobby-day-started { background: #eaf0f7; color: var(--navy); }
+.lobby-day-started>i { background: var(--navy); }
+.lobby-day-today { border: 2px solid var(--navy); }
+.lobby-day-complete.lobby-day-today { outline: 2px solid var(--navy); outline-offset: 2px; border-color: #fff; }
+.lobby-calendar-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.lobby-legend-done { background: var(--error); }
+.lobby-legend-started { background: #dce5f2; border: 2px solid var(--navy); }
+.lobby-legend-today { border: 2px solid var(--navy); background: #fff; }
+.lobby-daily-done,.lobby-today-complete { border-color: #dfbec8; background: var(--error-soft); }
+.lobby-daily-done .lobby-daily-icon,.lobby-daily-done strong,.lobby-today-complete .lobby-today-symbol,.lobby-today-complete strong { color: var(--error); }
+.lobby-language { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 0 0 24px; padding: 12px 0 18px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.lobby-language select { min-height: 44px; min-width: 130px; padding: 8px 12px; border: 1px solid #c7d0dd; border-radius: 8px; background: #fff; color: var(--ink); }
+.lobby-resume { margin: 25px 0; }
+.lobby-resume h2 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+.lobby-resume ul { padding: 0; margin: 0; list-style: none; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.lobby-resume li+li { border-top: 1px solid var(--border); }
+.lobby-resume button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 68px; padding: 13px 14px; text-align: left; border: 0; background: #fff; color: var(--navy); }
+.lobby-resume button>span:first-of-type { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lobby-resume strong { font-size: 12px; font-weight: 500; line-height: 1.5; }
+.lobby-resume small { color: var(--quiet); font-size: 11px; }
+.lobby-resume-label { display: flex; align-items: center; gap: 3px; margin-left: auto; font-size: 11px; white-space: nowrap; }
+:lang(en) .lobby-welcome h1 { font-size: 28px; letter-spacing: -.7px; }
+:lang(en) .lobby-daily-copy strong { font-size: 17px; }
+:lang(en) .lobby-welcome p { max-width: 310px; }

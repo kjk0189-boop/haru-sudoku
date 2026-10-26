@@ -11,6 +11,8 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 - library.ts: 클래식·날짜별 저장 분리와 기존 기록 이전
 - player.ts: 실행별 기록·완료 통계·한국 날짜와 일일 시드
 - access.ts: 무료 도움 및 향후 이용 정책 판단
+- i18n.tsx: 한국어·영어 컨텍스트·언어 저장·문서 언어
+- game-messages.ts: 게임 상태·논리 힌트 설명의 표시 언어 변환
 - useNativeEvents.ts: Android 뒤로가기·백그라운드 이벤트
 - session.ts: 게임 상태 변경, 실행 취소, 저장 데이터 검증
 - game.ts: 문제 묶음, 후보·충돌·완성·유일해·힌트
@@ -33,6 +35,8 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [App.tsx](../../src/App.tsx) | [./library](../../src/library.ts) |
 | [App.tsx](../../src/App.tsx) | [./player](../../src/player.ts) |
 | [App.tsx](../../src/App.tsx) | [./access](../../src/access.ts) |
+| [App.tsx](../../src/App.tsx) | [./i18n](../../src/i18n.tsx) |
+| [App.tsx](../../src/App.tsx) | [./game-messages](../../src/game-messages.ts) |
 | [App.tsx](../../src/App.tsx) | [./useNativeEvents](../../src/useNativeEvents.ts) |
 | [App.tsx](../../src/App.tsx) | [./session](../../src/session.ts) |
 | [Lobby.tsx](../../src/Lobby.tsx) | `react` |
@@ -40,7 +44,9 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [Lobby.tsx](../../src/Lobby.tsx) | [./game](../../src/game.ts) |
 | [Lobby.tsx](../../src/Lobby.tsx) | [./session](../../src/session.ts) |
 | [Lobby.tsx](../../src/Lobby.tsx) | [./player](../../src/player.ts) |
+| [Lobby.tsx](../../src/Lobby.tsx) | [./i18n](../../src/i18n.tsx) |
 | [Lobby.tsx](../../src/Lobby.tsx) | [./lobby.css](../../src/lobby.css) |
+| [game-messages.ts](../../src/game-messages.ts) | [./i18n](../../src/i18n.tsx) |
 | [generator-client.ts](../../src/generator-client.ts) | [./game](../../src/game.ts) |
 | [generator-client.ts](../../src/generator-client.ts) | [./generator](../../src/generator.ts) |
 | [generator-client.ts](../../src/generator-client.ts) | [./generator.worker.ts](../../src/generator.worker.ts) |
@@ -48,12 +54,14 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [generator.ts](../../src/generator.ts) | [./logic](../../src/logic.ts) |
 | [generator.worker.ts](../../src/generator.worker.ts) | [./game](../../src/game.ts) |
 | [generator.worker.ts](../../src/generator.worker.ts) | [./generator](../../src/generator.ts) |
+| [i18n.tsx](../../src/i18n.tsx) | `react` |
 | [library.ts](../../src/library.ts) | [./session](../../src/session.ts) |
 | [library.ts](../../src/library.ts) | [./player](../../src/player.ts) |
 | [logic.ts](../../src/logic.ts) | [./game](../../src/game.ts) |
 | [main.tsx](../../src/main.tsx) | `react` |
 | [main.tsx](../../src/main.tsx) | `react-dom/client` |
 | [main.tsx](../../src/main.tsx) | [./App](../../src/App.tsx) |
+| [main.tsx](../../src/main.tsx) | [./i18n](../../src/i18n.tsx) |
 | [main.tsx](../../src/main.tsx) | [./style.css](../../src/style.css) |
 | [player.ts](../../src/player.ts) | [./game](../../src/game.ts) |
 | [player.ts](../../src/player.ts) | [./session](../../src/session.ts) |

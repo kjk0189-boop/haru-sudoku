@@ -97,7 +97,7 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 @media(max-width:600px){
   .puzzle-label,.badge-divider{display:none}
   .tools button{position:relative}
-  .tools button[aria-label="고급 메모 자동 숫자 채우기"] small,.tools button[aria-label="랜덤 정답 확인하기"] small{position:absolute;top:1px;right:4px;background:#e0e5ed;color:#405573;font-size:7px;padding:1px 4px;border-radius:8px}
+  .tools button[data-help] small{position:absolute;top:1px;right:4px;background:#e0e5ed;color:#405573;font-size:7px;padding:1px 4px;border-radius:8px}
   .brand-home .brand-icon{display:none}.brand-home{gap:8px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -107,3 +107,7 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 .cell{font-weight:400}.cell.given{font-weight:500}.cell.incorrect,.cell.conflict{color:var(--error);background:var(--error-soft)}.cell.incorrect.selected,.cell.conflict.selected{box-shadow:inset 0 0 0 2px var(--error)}
 .tools button:disabled,.number-pad button:disabled{opacity:.4}
 .board.is-paused .cell{color:transparent;background:#f3f5f8;box-shadow:none}
+
+.new-game-tiers button{justify-content:center;align-items:center;min-height:48px;font-weight:500}
+:lang(en) .tools button>span{font-size:9px}
+:lang(en) .new-game-tiers button{font-size:14px}

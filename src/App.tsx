@@ -7,11 +7,12 @@ import Lobby, { type LobbyTab } from './Lobby';
 import { emptyLibrary, identifySession, putSession, restoreLibrary, LIBRARY_KEY, PROFILE_KEY } from './library';
 import { abandonRecord, dailyDifficulty, dailySeed, koreaDayKey, restoreProfile, upsertRecord, type GameMode } from './player';
 import { assessAccess } from './access';
+import { useI18n } from './i18n';
+import { translateGameMessage } from './game-messages';
 import { minimizeNativeApp, useNativeEvents } from './useNativeEvents';
 import { applyHint, completedDigits, createSession, enterValue, fillAllNotes, puzzleFor, remainingHints, restoreSession, STORAGE_KEY, undo, restartSession, type Session } from './session';
 
-const LABELS: Record<Difficulty, string> = { easy: '쉬움', medium: '보통', hard: '어려움', expert: '전문가' };
-const DESCRIPTIONS: Record<Difficulty, string> = { easy: '기본 규칙으로 차근차근', medium: '후보를 비교하며 깊이 생각하기', hard: '후보 잠금과 후보 쌍에 도전', expert: 'X-Wing까지 활용하는 고급 도전' };
+const KOREAN_LABELS: Record<Difficulty, string> = { easy: '쉬움', medium: '보통', hard: '어려움', expert: '전문가' };
 const time = (seconds: number) => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
 function initialData() {
   try {
@@ -24,6 +25,10 @@ function initialData() {
 }
 
 export default function App() {
+  const { language, t } = useI18n();
+  const LABELS: Record<Difficulty, string> = { easy: t('쉬움', 'Easy'), medium: t('보통', 'Medium'), hard: t('어려움', 'Hard'), expert: t('전문가', 'Expert') };
+  const savedNotice = t('진행 기록은 기기 내 자동 저장됩니다.', 'Progress is saved automatically on this device.');
+  const saveError = t('자동 저장을 할 수 없어요. 기기 저장 설정을 확인해 주세요.', 'Unable to save automatically. Check your device storage settings.');
   const [initial] = useState(initialData);
   const [library, setLibrary] = useState(initial.library);
   const [profile, setProfile] = useState(initial.profile);
@@ -124,6 +129,7 @@ export default function App() {
     closeOverlays(); setPaused(true); setView('home');
   }
   function resumeGame(saved: Session) {
+    setDifficulty(puzzleFor(saved).difficulty);
     setSession(saved); setSelected(null); setMemo(false); setPaused(false); setView('game');
     setGenerationFailed(false); setMessage('이어서 천천히 풀어보세요.');
   }
@@ -152,7 +158,7 @@ export default function App() {
         try { localStorage.setItem(RECENT_KEY, JSON.stringify(nextRecent)); } catch { /* Current-memory exclusions remain available. */ }
       }
       setDifficulty(tier); setView('game'); setSelected(null); setPaused(false); setMemo(false);
-      setMessage(mode === 'daily' ? `${dayKey} 매일 도전을 시작해요. 같은 날짜는 같은 문제로 즐길 수 있어요.` : `${LABELS[tier]} 새 문제를 준비했어요. 정답이 하나이며 논리적으로 끝까지 풀 수 있어요.`);
+      setMessage(mode === 'daily' ? `${dayKey} 매일 도전을 시작해요. 같은 날짜는 같은 문제로 즐길 수 있어요.` : `${KOREAN_LABELS[tier]} 새 문제를 준비했어요. 정답이 하나이며 논리적으로 끝까지 풀 수 있어요.`);
     } catch (error) {
       setGenerationFailed(true);
       setMessage(error instanceof DOMException && error.name === 'AbortError' ? '문제 생성을 취소했어요. 기존 기록은 그대로 보관됩니다.' : error instanceof Error ? error.message : '문제를 생성하지 못했어요. 다시 시도해 주세요.');
@@ -190,7 +196,7 @@ export default function App() {
     }
   }
   const blocking = generating && view !== 'game' ? 'generating' : dialog || settings || help || panel;
-  const statusText = showCompletion ? `멋져요! ${time(session.elapsed)} 동안 집중해서 완성했어요. 힌트 ${session.hints}회 사용.` : message;
+  const statusText = showCompletion ? t(`멋져요! ${time(session.elapsed)} 동안 집중해서 완성했어요. 힌트 ${session.hints}회 사용.`, `Puzzle complete in ${time(session.elapsed)}. Hints used: ${session.hints}.`) : translateGameMessage(message, language);
   function openOverlay(kind: 'menu' | 'hint' | 'settings' | 'help' | 'new' | 'restart') {
     if (!modalTrigger.current) modalTrigger.current = document.activeElement as HTMLElement;
     setPanel(null); setSettings(false); setHelp(false); setDialog(null);
@@ -234,97 +240,100 @@ export default function App() {
   }, () => setPaused(true));
   return <>
     {view !== 'game' && <div className="lobby-host" inert={!!blocking}><Lobby tab={view} onTab={setView}
-      onNewClassic={()=>openOverlay('new')} onContinueClassic={()=>library.classic && resumeGame(library.classic)}
+      onNewClassic={()=>openOverlay('new')} onContinueClassic={()=>library.classic && resumeGame(library.classic)} onResume={resumeGame}
       onDaily={openDaily} onGuide={()=>openOverlay('settings')} classic={library.classic} dailySessions={library.daily}
       profile={profile} today={today} storageFailed={saveFailed}/></div>}
     {view === 'game' && <>
-    <header className="site-header" inert={!!blocking}><button type="button" className="brand brand-home" onClick={leaveGame} aria-label="홈으로"><ArrowLeft size={20}/><span className="brand-icon"><Grid2X2 size={22} /></span>하루 스도쿠</button><div className="header-right"><span className="header-tag">클래식 · 매일 도전</span><button className="icon-button desktop-guide" aria-label="게임 안내" onClick={() => openOverlay('settings')}><BookOpen size={20}/></button><button className="icon-button mobile-only mobile-more" aria-label="더보기" aria-haspopup="dialog" aria-expanded={panel==='menu'} aria-controls="game-dialog" onClick={()=>openOverlay('menu')}><MoreHorizontal size={22}/></button></div></header>
+    <header className="site-header" inert={!!blocking}>
+      <button type="button" className="brand brand-home" onClick={leaveGame} aria-label={t('홈으로', 'Back to home')}><ArrowLeft size={20}/><span className="brand-icon"><Grid2X2 size={22}/></span>{t('하루 스도쿠', 'Haru Sudoku')}</button>
+      <div className="header-right"><span className="header-tag">{t('클래식 · 매일 도전', 'Classic · Daily challenge')}</span><button className="icon-button desktop-guide" aria-label={t('게임 안내', 'Game instructions')} onClick={() => openOverlay('settings')}><BookOpen size={20}/></button><button className="icon-button mobile-only mobile-more" aria-label={t('더보기', 'More')} aria-haspopup="dialog" aria-expanded={panel==='menu'} aria-controls="game-dialog" onClick={()=>openOverlay('menu')}><MoreHorizontal size={22}/></button></div>
+    </header>
     <main onKeyDown={keydown} inert={!!blocking}>
-      <section className="intro"><h1>하루 스도쿠</h1><p>가로, 세로, 3×3 상자에 1부터 9까지.</p></section>
+      <section className="intro"><h1>{t('하루 스도쿠', 'Haru Sudoku')}</h1><p>{t('가로, 세로, 3×3 상자에 1부터 9까지.', 'Fill each row, column and 3×3 box with 1 through 9.')}</p></section>
       <div className="workspace">
-        <section className="game-panel" aria-label="스도쿠 게임">
-          <div className="game-top"><div className="difficulty-badge"><span/>{session.mode==='daily'?'매일 도전':'클래식'} · {LABELS[puzzle.difficulty]}<span className="badge-divider">/</span><span className="puzzle-label">클래식 9 × 9</span></div><div className="timer"><Clock3 size={16}/><span>{time(session.elapsed)}</span><button aria-label={paused ? '게임 계속하기' : '게임 일시정지'} className="icon-button small" disabled={generating||complete} onClick={() => setPaused(v => !v)}>{paused ? <Play size={15}/> : <Pause size={15}/>}</button></div></div>
+        <section className="game-panel" aria-label={t('스도쿠 게임', 'Sudoku game')}>
+          <div className="game-top"><div className="difficulty-badge"><span/>{session.mode==='daily'?t('매일 도전', 'Daily'):t('클래식', 'Classic')} · {LABELS[puzzle.difficulty]}<span className="badge-divider">/</span><span className="puzzle-label">{t('클래식 9 × 9', 'Classic 9 × 9')}</span></div><div className="timer"><Clock3 size={16}/><span>{time(session.elapsed)}</span><button aria-label={paused ? t('게임 계속하기', 'Resume game') : t('게임 일시정지', 'Pause game')} className="icon-button small" disabled={generating||complete} onClick={() => setPaused(v => !v)}>{paused ? <Play size={15}/> : <Pause size={15}/>}</button></div></div>
           <div className="board-container" aria-busy={generating}>
-            <div ref={boardRef} className={`board ${paused ? 'is-paused' : ''}`} role="grid" aria-label="스도쿠 9행 9열">
+            <div ref={boardRef} className={`board ${paused ? 'is-paused' : ''}`} role="grid" aria-label={t('스도쿠 9행 9열', 'Sudoku, 9 rows and 9 columns')}>
               {Array.from({length:9},(_,r) => <div role="row" className="board-row" key={r}>{session.board.slice(r*9,r*9+9).map((v,c) => {
                 const i=r*9+c, sr=selected===null?-1:Math.floor(selected/9), sc=selected===null?-1:selected%9;
                 const incorrect=!!v&&!puzzle.givens[i]&&v!==puzzle.solution[i];
                 const related=selected!==null&&(sr===r||sc===c||(Math.floor(sr/3)===Math.floor(r/3)&&Math.floor(sc/3)===Math.floor(c/3)));
-                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&(errors.has(i)||incorrect)} disabled={generating||paused} aria-label={`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&errors.has(i)?', 숫자 중복':!paused&&incorrect?', 정답과 다름':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${errors.has(i)?'conflict':''} ${incorrect?'incorrect':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
+                const label = t(`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&errors.has(i)?', 숫자 중복':!paused&&incorrect?', 정답과 다름':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`,
+                  `Row ${r+1}, column ${c+1}, ${paused?'hidden':v||'empty'}${puzzle.givens[i]?', given':''}${!paused&&errors.has(i)?', duplicate number':!paused&&incorrect?', incorrect':''}${!paused&&session.notes[i].length?`, notes ${session.notes[i].join(', ')}`:''}`);
+                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&(errors.has(i)||incorrect)} disabled={generating||paused} aria-label={label} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${errors.has(i)?'conflict':''} ${incorrect?'incorrect':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
                   {!paused&&(v||<span className="notes">{Array.from({length:9},(_,n)=><span key={n}>{session.notes[i].includes(n+1)?n+1:''}</span>)}</span>)}
                 </button>;
               })}</div>)}
             </div>
-            {generating&&<div className="pause-overlay generation-overlay" role="status"><span className="generation-spinner"/><h2>새로운 문제를 만들고 있어요</h2><p>정답과 난이도를 꼼꼼히 확인하고 있어요.<br/>전문가 문제는 조금 더 걸릴 수 있어요.</p><button className="secondary" onClick={()=>generation.current?.abort()}>생성 취소</button></div>}
-            {paused&&!generating&&<div className="pause-overlay"><span className="pause-circle"><Pause size={27}/></span><h2>잠깐 쉬어가세요</h2><p>진행 상황은 자동으로 저장됩니다.</p><button className="primary" onClick={()=>setPaused(false)}><Play size={16}/> 이어서 풀기</button></div>}
+            {generating&&<div className="pause-overlay generation-overlay" role="status"><span className="generation-spinner"/><h2>{t('새로운 문제를 만들고 있어요', 'Preparing a new puzzle')}</h2><p>{t('정답과 난이도를 꼼꼼히 확인하고 있어요.', 'Checking the solution and difficulty.')}<br/>{t('전문가 문제는 조금 더 걸릴 수 있어요.', 'Expert puzzles may take a little longer.')}</p><button className="secondary" onClick={()=>generation.current?.abort()}>{t('생성 취소', 'Cancel generation')}</button></div>}
+            {paused&&!generating&&<div className="pause-overlay"><span className="pause-circle"><Pause size={27}/></span><h2>{t('잠깐 쉬어가세요', 'Game paused')}</h2><p>{savedNotice}</p><button className="primary" onClick={()=>setPaused(false)}><Play size={16}/>{t('이어서 풀기', 'Continue')}</button></div>}
           </div>
-          <div className="board-bottom"><span><span className="status-dot"/>{complete?'퍼즐 완성!':paused?'잠시 쉬는 중':`실수 ${session.mistakes ?? 0} · ${session.mode==='daily'?session.dayKey:'나만의 속도로'}`}</span><span><b>{filled}</b> / 81</span></div>
+          <div className="board-bottom"><span><span className="status-dot"/>{complete?t('퍼즐 완성!', 'Puzzle complete!'):paused?t('잠시 쉬는 중', 'Paused'):t(`실수 ${session.mistakes ?? 0} · ${session.mode==='daily'?session.dayKey:'나만의 속도로'}`, `Mistakes ${session.mistakes ?? 0} · ${session.mode==='daily'?session.dayKey:'At your own pace'}`)}</span><span><b>{filled}</b> / 81</span></div>
         </section>
         <aside className="controls">
-          <div className="control-heading"><span className="section-label">MY SUDOKU</span><span className="live-label"><span/>{generating?'문제 준비 중':complete?'완성':'진행 중'}</span></div>
-          <h2>숫자 입력</h2><p className="control-description">빈칸을 선택하고 숫자를 입력하세요.</p>
-          <label className="field-label" htmlFor="difficulty">난이도 선택</label><div className="select-wrap"><select disabled={generating} id="difficulty" value={difficulty} onChange={e=>setDifficulty(e.target.value as Difficulty)}>{Object.entries(LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><ChevronDown size={16}/></div>
-          <button disabled={generating} className="primary new-game" onClick={()=>openOverlay('new')}>새 게임 시작<ArrowRight size={17}/></button>
-          <p className="difficulty-description">{DESCRIPTIONS[difficulty]}</p>
+          <div className="control-heading"><span className="section-label">{t('스도쿠', 'MY SUDOKU')}</span><span className="live-label"><span/>{generating?t('문제 준비 중', 'Preparing'):complete?t('완성', 'Complete'):t('진행 중', 'In progress')}</span></div>
+          <h2>{t('숫자 입력', 'Enter a number')}</h2><p className="control-description">{t('빈칸을 선택하고 숫자를 입력하세요.', 'Select an empty cell, then choose a number.')}</p>
+          <label className="field-label" htmlFor="difficulty">{t('난이도 선택', 'Difficulty')}</label><div className="select-wrap"><select disabled={generating} id="difficulty" value={difficulty} onChange={e=>setDifficulty(e.target.value as Difficulty)}>{Object.entries(LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><ChevronDown size={16}/></div>
+          <button disabled={generating} className="primary new-game" onClick={()=>openOverlay('new')}>{t('새 게임 시작', 'New game')}<ArrowRight size={17}/></button>
           <div className="divider"/>
-          <div className="input-label"><span className="field-label">숫자 입력</span><span>{memo?'메모 모드 ON':'칸을 선택한 후 입력'}</span></div>
-          <div className="number-pad">{Array.from({length:9},(_,n)=>fullDigits.has(n+1)?<span key={n} className="number-complete" aria-hidden="true"/>:<button key={n} disabled={generating||paused||complete} aria-label={`숫자 ${n+1} 입력`} onClick={()=>input(n+1)} className={selectedValue===n+1?'active':''}>{n+1}<span>{Math.max(0,9-session.board.filter(v=>v===n+1).length)}</span></button>)}</div>
-          <div className="tools"><button disabled={generating||paused||complete||!session.history.length} onClick={()=>setSession(undo)}><Undo2 size={20}/><span>되돌리기</span></button><button disabled={generating||paused||complete} onClick={()=>input(0)}><Eraser size={20}/><span>지우기</span></button><button disabled={generating||paused||complete} aria-pressed={memo} className={memo?'tool-active':''} onClick={()=>setMemo(v=>!v)}><Pencil size={20}/><span>메모 <small>{memo?'ON':'OFF'}</small></span></button>
-            <button className="mobile-only" aria-label="고급 메모 자동 숫자 채우기" disabled={generating||paused||complete} onClick={advancedMemo}><Sparkles size={20}/><span>자동 메모 <small>무료</small></span></button>
-            <button className="mobile-only" aria-label="랜덤 정답 확인하기" disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><Lightbulb size={20}/><span>정답 확인 <small>무료</small></span></button>
+          <div className="input-label"><span className="field-label">{t('숫자 입력', 'Numbers')}</span><span>{memo?t('메모 모드 ON', 'Notes ON'):t('칸을 선택한 후 입력', 'Select a cell first')}</span></div>
+          <div className="number-pad">{Array.from({length:9},(_,n)=>fullDigits.has(n+1)?<span key={n} className="number-complete" aria-hidden="true"/>:<button key={n} disabled={generating||paused||complete} aria-label={t(`숫자 ${n+1} 입력`, `Enter ${n+1}`)} onClick={()=>input(n+1)} className={selectedValue===n+1?'active':''}>{n+1}<span>{Math.max(0,9-session.board.filter(v=>v===n+1).length)}</span></button>)}</div>
+          <div className="tools"><button disabled={generating||paused||complete||!session.history.length} onClick={()=>setSession(undo)}><Undo2 size={20}/><span>{t('되돌리기', 'Undo')}</span></button><button disabled={generating||paused||complete} onClick={()=>input(0)}><Eraser size={20}/><span>{t('지우기', 'Erase')}</span></button><button disabled={generating||paused||complete} aria-pressed={memo} className={memo?'tool-active':''} onClick={()=>setMemo(v=>!v)}><Pencil size={20}/><span>{t('메모', 'Notes')} <small>{memo?'ON':'OFF'}</small></span></button>
+            <button className="mobile-only" data-help="auto-notes" aria-label={t('고급 메모 자동 숫자 채우기', 'Fill all candidate notes')} disabled={generating||paused||complete} onClick={advancedMemo}><Sparkles size={20}/><span>{t('자동 메모', 'Auto notes')} <small>{t('무료', 'Free')}</small></span></button>
+            <button className="mobile-only" data-help="hint" aria-label={t('랜덤 정답 확인하기', 'Reveal a correct number')} disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><Lightbulb size={20}/><span>{t('정답 확인', 'Hint')} <small>{t('무료', 'Free')}</small></span></button>
           </div>
-          <button className="advanced-memo" disabled={generating||paused||complete} onClick={advancedMemo}><span><Sparkles size={18}/>고급 메모</span><span>자동 숫자 채우기 · 무료</span></button>
-          <button className="hint-button" disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><span><Lightbulb size={19}/>랜덤 정답 확인하기</span><span>{hintsLeft===null?'힌트 무제한':`힌트 ${hintsLeft}회 남음`}<ArrowRight size={15}/></span></button>
-          <p className="hint-usage">이번 게임에서 힌트 {session.hints}회 사용</p>
-          <div className="save-status">{saveFailed?<><X size={14}/>저장 불가 · 브라우저 저장 설정을 확인하세요</>:<><ShieldCheck size={14}/>진행 상황이 이 브라우저에 자동 저장돼요</>}</div>
-          <button disabled={generating} className="restart-link" onClick={()=>openOverlay('restart')}><RotateCcw size={13}/>이 문제 처음부터 풀기</button>
+          <button className="advanced-memo" disabled={generating||paused||complete} onClick={advancedMemo}><span><Sparkles size={18}/>{t('고급 메모', 'Auto notes')}</span><span>{t('자동 숫자 채우기 · 무료', 'Fill all candidates · Free')}</span></button>
+          <button className="hint-button" disabled={generating||paused||complete||hintsLeft===0} onClick={hint}><span><Lightbulb size={19}/>{t('랜덤 정답 확인하기', 'Reveal a correct number')}</span><span>{hintsLeft===null?t('힌트 무제한', 'Unlimited hints'):t(`힌트 ${hintsLeft}회 남음`, `${hintsLeft} hints left`)}<ArrowRight size={15}/></span></button>
+          <p className="hint-usage">{t(`이번 게임에서 힌트 ${session.hints}회 사용`, `Hints used this game: ${session.hints}`)}</p>
+          <div className="save-status">{saveFailed?<><X size={14}/>{t('저장 불가 · 기기 저장 설정을 확인하세요', 'Unable to save · Check device storage settings')}</>:<><ShieldCheck size={14}/>{savedNotice}</>}</div>
+          <button disabled={generating} className="restart-link" onClick={()=>openOverlay('restart')}><RotateCcw size={13}/>{t('이 문제 처음부터 풀기', 'Restart this puzzle')}</button>
         </aside>
       </div>
-      <div className={`message ${showCompletion?'completed':''}`} role="status" aria-live="polite">{showCompletion?<Sparkles size={19}/>:<Lightbulb size={18}/>}<span>{showCompletion?`멋져요! ${time(session.elapsed)} 동안 집중해서 완성했어요. 힌트 ${session.hints}회 사용.`:message}</span></div>
-      <div className="mobile-status mobile-only" role="status" aria-live="polite"><button aria-haspopup="dialog" onClick={()=>openOverlay('hint')}><span>{saveFailed?'자동 저장을 할 수 없어요. 브라우저 저장 설정을 확인해 주세요.':statusText}</span><ChevronDown size={15}/></button></div>
-      <section className="tips"><span className="tip-icon"><Grid2X2 size={21}/></span><div><h3>스도쿠, 이렇게 즐겨요</h3><p>가로, 세로, 3×3 상자마다 1부터 9까지 한 번씩 채워주세요.</p></div><button onClick={()=>openOverlay('help')}>플레이 가이드<ArrowRight size={15}/></button></section>
-      <p className="keyboard-guide">키보드로도 편하게 <kbd>1–9</kbd> 숫자 입력 <span>·</span> <kbd>↑ ↓ ← →</kbd> 이동 <span>·</span> <kbd>N</kbd> 메모</p>
+      <div className={`message ${showCompletion?'completed':''}`} role="status" aria-live="polite">{showCompletion?<Sparkles size={19}/>:<Lightbulb size={18}/>}<span>{statusText}</span></div>
+      <div className="mobile-status mobile-only" role="status" aria-live="polite"><button aria-haspopup="dialog" onClick={()=>openOverlay('hint')}><span>{saveFailed?saveError:statusText}</span><ChevronDown size={15}/></button></div>
+      <section className="tips"><span className="tip-icon"><Grid2X2 size={21}/></span><div><h3>{t('스도쿠, 이렇게 즐겨요', 'How to play')}</h3><p>{t('가로, 세로, 3×3 상자마다 1부터 9까지 한 번씩 채워주세요.', 'Use each number from 1 to 9 once in every row, column and 3×3 box.')}</p></div><button onClick={()=>openOverlay('help')}>{t('플레이 가이드', 'Playing guide')}<ArrowRight size={15}/></button></section>
+      <p className="keyboard-guide">{t('키보드로도 편하게', 'Keyboard shortcuts')} <kbd>1–9</kbd> {t('숫자 입력', 'Enter number')} <span>·</span> <kbd>↑ ↓ ← →</kbd> {t('이동', 'Move')} <span>·</span> <kbd>N</kbd> {t('메모', 'Notes')}</p>
     </main>
-    <footer inert={!!blocking}><span className="footer-brand">하루 스도쿠<span>.</span></span><p>클래식과 매일 도전</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+    <footer inert={!!blocking}><span className="footer-brand">{t('하루 스도쿠', 'Haru Sudoku')}<span>.</span></span><p>{t('클래식과 매일 도전', 'Classic and daily challenges')}</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
     </>}
-    {blocking&&<div className={`modal-backdrop ${panel?'sheet-backdrop':''}`}><section id="game-dialog" className={`modal ${settings?'game-guide':''} ${panel?'bottom-sheet':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label="닫기" onClick={closeOverlays}><X size={20}/></button>
-      {generating && view !== 'game'?<><span className="generation-spinner"/><h2 id="modal-title">게임을 준비하고 있어요</h2><p>정답과 난이도를 확인하고 있어요.</p><button className="secondary" onClick={()=>generation.current?.abort()}>생성 취소</button></>:panel==='menu'?<>
-        <h2 id="modal-title">게임 메뉴</h2>
-        <p className="menu-description">{session.mode==='daily'?`${session.dayKey} 매일 도전`:'클래식 플레이'}</p>
-        <label className="field-label" htmlFor="mobile-difficulty">새 게임 난이도</label>
+    {blocking&&<div className={`modal-backdrop ${panel?'sheet-backdrop':''}`}><section id="game-dialog" className={`modal ${settings?'game-guide':''} ${panel?'bottom-sheet':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label={t('닫기', 'Close')} onClick={closeOverlays}><X size={20}/></button>
+      {generating && view !== 'game'?<><span className="generation-spinner"/><h2 id="modal-title">{t('게임을 준비하고 있어요', 'Preparing your game')}</h2><p>{t('정답과 난이도를 확인하고 있어요.', 'Checking the solution and difficulty.')}</p><button className="secondary" onClick={()=>generation.current?.abort()}>{t('생성 취소', 'Cancel generation')}</button></>:panel==='menu'?<>
+        <h2 id="modal-title">{t('게임 메뉴', 'Game menu')}</h2>
+        <p className="menu-description">{session.mode==='daily'?t(`${session.dayKey} 매일 도전`, `${session.dayKey} Daily challenge`):t('클래식 플레이', 'Classic game')}</p>
+        <label className="field-label" htmlFor="mobile-difficulty">{t('새 게임 난이도', 'New game difficulty')}</label>
         <div className="select-wrap"><select id="mobile-difficulty" disabled={generating} value={difficulty} onChange={e=>setDifficulty(e.target.value as Difficulty)}>{Object.entries(LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><ChevronDown size={16}/></div>
-        <p className="menu-description">{DESCRIPTIONS[difficulty]}</p>
-        <button className="primary menu-new" disabled={generating} onClick={()=>{setPanel(null);openOverlay('new');}}>선택한 난이도로 새 게임<ArrowRight size={17}/></button>
-        <div className="menu-actions"><button onClick={leaveGame}><ArrowLeft size={18}/>홈으로 · 기록 보관</button>
-          <button disabled={generating} onClick={()=>{setPanel(null);openOverlay('restart');}}><RotateCcw size={18}/>이 문제 처음부터 풀기</button>
-          <button onClick={()=>{setPanel(null);openOverlay('settings');}}><BookOpen size={18}/>게임 안내</button>
-          <button onClick={()=>{setPanel(null);openOverlay('help');}}><Lightbulb size={18}/>플레이 가이드</button>
+        <button className="primary menu-new" disabled={generating} onClick={()=>{setPanel(null);openOverlay('new');}}>{t('선택한 난이도로 새 게임', 'Start a new game')}<ArrowRight size={17}/></button>
+        <div className="menu-actions"><button onClick={leaveGame}><ArrowLeft size={18}/>{t('홈으로 · 기록 보관', 'Home · Save progress')}</button>
+          <button disabled={generating} onClick={()=>{setPanel(null);openOverlay('restart');}}><RotateCcw size={18}/>{t('이 문제 처음부터 풀기', 'Restart this puzzle')}</button>
+          <button onClick={()=>{setPanel(null);openOverlay('settings');}}><BookOpen size={18}/>{t('게임 안내', 'Game instructions')}</button>
+          <button onClick={()=>{setPanel(null);openOverlay('help');}}><Lightbulb size={18}/>{t('플레이 가이드', 'Playing guide')}</button>
         </div>
-        <p className="menu-save">{saveFailed?'자동 저장 불가 · 브라우저 저장 설정을 확인해 주세요.':'진행 상황은 이 브라우저에 자동 저장됩니다.'}</p>
-        <p className="menu-save">도움 기능 무료 · 자동 메모 {session.advancedNotes ?? 0}회 사용</p><p className="menu-save">힌트 {session.hints}회 사용 · {hintsLeft===null?'무제한':`${hintsLeft}회 남음`}</p>
+        <p className="menu-save">{saveFailed?saveError:savedNotice}</p>
+        <p className="menu-save">{t(`도움 기능 무료 · 자동 메모 ${session.advancedNotes ?? 0}회 사용`, `Help is free · Auto notes used: ${session.advancedNotes ?? 0}`)}</p><p className="menu-save">{t(`힌트 ${session.hints}회 사용`, `Hints used: ${session.hints}`)} · {hintsLeft===null?t('무제한', 'Unlimited'):t(`${hintsLeft}회 남음`, `${hintsLeft} left`)}</p>
       </>:panel==='hint'?<>
-        <h2 id="modal-title">{view==='game' && showCompletion?'퍼즐 완성':'풀이 안내'}</h2>
-        <p className="hint-explanation">{saveFailed?'자동 저장을 할 수 없어요. 브라우저 저장 설정을 확인해 주세요.':view==='game'?statusText:message}</p>
-        <button className="primary" onClick={()=>setPanel(null)}>{view==='game'?'확인하고 계속 풀기':'확인'}<Check size={16}/></button>
-      </>:dialog?<><span className="modal-icon"><Grid2X2 size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2>{dialog==='new'&&<div className="new-game-tiers" role="group" aria-label="새 게임 난이도">{Object.entries(LABELS).map(([key,label])=><button key={key} aria-pressed={difficulty===key} className={difficulty===key?'is-active':''} onClick={()=>setDifficulty(key as Difficulty)}>{label}<small>{DESCRIPTIONS[key as Difficulty]}</small></button>)}</div>}<p>{dialog==='restart'?'현재 문제를 새 시도로 시작합니다. 이전 시도는 내 기록에 남습니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 클래식 진행 중인 게임은 내 기록에 보관하고 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<>
-        <h2 id="modal-title">게임 안내</h2>
-        <h3>기본 규칙</h3>
+        <h2 id="modal-title">{view==='game' && showCompletion?t('퍼즐 완성', 'Puzzle complete'):t('풀이 안내', 'Hint explanation')}</h2>
+        <p className="hint-explanation">{saveFailed?saveError:view==='game'?statusText:translateGameMessage(message, language)}</p>
+        <button className="primary" onClick={()=>setPanel(null)}>{view==='game'?t('확인하고 계속 풀기', 'Continue playing'):t('확인', 'OK')}<Check size={16}/></button>
+      </>:dialog?<><span className="modal-icon"><Grid2X2 size={26}/></span><h2 id="modal-title">{dialog==='restart'?t('처음부터 다시 풀까요?', 'Restart this puzzle?'):t('새 퍼즐을 시작할까요?', 'Start a new puzzle?')}</h2>{dialog==='new'&&<div className="new-game-tiers" role="group" aria-label={t('새 게임 난이도', 'New game difficulty')}>{Object.entries(LABELS).map(([key,label])=><button key={key} aria-pressed={difficulty===key} className={difficulty===key?'is-active':''} onClick={()=>setDifficulty(key as Difficulty)}>{label}</button>)}</div>}<p>{dialog==='restart'?t('현재 문제를 새 시도로 시작합니다. 이전 시도는 내 기록에 남습니다.', 'Start this puzzle again. Your previous attempt stays in your records.'):t(`${LABELS[difficulty]} 난이도로 새로운 문제를 시작합니다.`, `Start a new ${LABELS[difficulty].toLowerCase()} puzzle.`)}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>{t('계속 풀기', 'Keep playing')}</button><button className="primary" onClick={start}>{t('시작하기', 'Start')}<ArrowRight size={16}/></button></div></>:settings?<>
+        <h2 id="modal-title">{t('게임 안내', 'Game instructions')}</h2>
+        <h3>{t('기본 규칙', 'Basic rules')}</h3>
         <ul>
-          <li><strong>격자 구조</strong>: 전체 9×9 격자는 81개의 칸으로 이루어져 있으며, 3×3 크기의 작은 정사각형 9개로 나뉩니다.</li>
-          <li><strong>행(가로줄) 규칙</strong>: 1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.</li>
-          <li><strong>열(세로줄) 규칙</strong>: 1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.</li>
-          <li><strong>3×3 블록 규칙</strong>: 각각의 3×3 작은 박스 안에도 1부터 9까지의 숫자가 중복 없이 들어가야 합니다.</li>
+          <li><strong>{t('격자 구조', 'The grid')}</strong>: {t('전체 9×9 격자는 81개의 칸으로 이루어져 있으며, 3×3 크기의 작은 정사각형 9개로 나뉩니다.', 'The 9×9 grid has 81 cells, divided into nine 3×3 boxes.')}</li>
+          <li><strong>{t('행(가로줄) 규칙', 'Rows')}</strong>: {t('1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.', 'Each number from 1 to 9 must appear exactly once.')}</li>
+          <li><strong>{t('열(세로줄) 규칙', 'Columns')}</strong>: {t('1부터 9까지의 숫자가 겹치지 않고 정확히 한 번씩 들어가야 합니다.', 'Each number from 1 to 9 must appear exactly once.')}</li>
+          <li><strong>{t('3×3 블록 규칙', '3×3 boxes')}</strong>: {t('각각의 3×3 작은 박스 안에도 1부터 9까지의 숫자가 중복 없이 들어가야 합니다.', 'Each 3×3 box must also contain the numbers 1 to 9 without repetition.')}</li>
         </ul>
-        <h3>주요 풀이 전략</h3>
+        <h3>{t('주요 풀이 전략', 'Solving strategies')}</h3>
         <ul>
-          <li><strong>소거법</strong>: 가로, 세로, 3×3 블록을 확인해 이미 사용된 숫자를 제외하고 들어갈 수 있는 후보를 좁혀나갑니다.</li>
-          <li><strong>네이키드 싱글(확실한 싱글)</strong>: 다른 가능성이 전혀 없고 오직 하나의 숫자만 들어갈 수 있는 칸을 찾아 채웁니다.</li>
-          <li><strong>메모 기능</strong>: 헷갈리는 칸에는 가능한 후보 숫자를 작게 적어두어 중복을 방지합니다.</li>
-          <li><strong>고급 메모 기능</strong>: 자동으로 숫자를 적어줍니다.</li>
+          <li><strong>{t('소거법', 'Elimination')}</strong>: {t('가로, 세로, 3×3 블록을 확인해 이미 사용된 숫자를 제외하고 들어갈 수 있는 후보를 좁혀나갑니다.', 'Check the row, column and box to rule out numbers already used and narrow the candidates.')}</li>
+          <li><strong>{t('네이키드 싱글(확실한 싱글)', 'Naked single')}</strong>: {t('다른 가능성이 전혀 없고 오직 하나의 숫자만 들어갈 수 있는 칸을 찾아 채웁니다.', 'Fill a cell when only one possible candidate remains.')}</li>
+          <li><strong>{t('메모 기능', 'Notes')}</strong>: {t('헷갈리는 칸에는 가능한 후보 숫자를 작게 적어두어 중복을 방지합니다.', 'Write small candidate numbers in cells to keep track of the possibilities.')}</li>
+          <li><strong>{t('고급 메모 기능', 'Auto notes')}</strong>: {t('자동으로 숫자를 적어줍니다.', 'Fill all legal candidate notes automatically.')}</li>
         </ul>
-        <h3>게임 진행 안내</h3>
-        <ul><li>진행 기록은 게임 브라우저에 자동 저장됩니다.</li></ul>
-      </>:<><h2 id="modal-title">한 칸씩, 차근차근</h2><p>각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.</p><p>빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.</p><p>고급 메모는 현재 보드를 기준으로 모든 빈칸의 후보를 한 번에 새로 채워요. 기존 메모는 교체되며 되돌리기로 복원할 수 있어요. 숫자를 입력한 뒤 다시 누르면 후보가 갱신돼요.</p><p>9개가 채워진 숫자는 입력판에서 사라져요. 지우거나 되돌리면 다시 나타나요.</p><p>힌트는 단일 후보, 후보 잠금, 후보 쌍, X-Wing까지 순서대로 설명하고 한 칸을 채워줘요. 잘못 입력한 숫자가 있으면 먼저 수정을 안내해요.</p><p>방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>알겠어요</button></>}
+        <h3>{t('게임 진행 안내', 'Saving progress')}</h3>
+        <ul><li>{savedNotice}</li></ul>
+      </>:<><h2 id="modal-title">{t('한 칸씩, 차근차근', 'Playing guide')}</h2><p>{t('각 가로줄, 세로줄, 굵은 선으로 구분된 3×3 상자에는 1~9가 한 번씩 들어가야 해요.', 'Each row, column and 3×3 box must contain 1 to 9 exactly once.')}</p><p>{t('빈칸을 선택하고 숫자를 누르세요. 메모 모드에서는 후보 숫자를 작게 적을 수 있어요. 같은 숫자를 다시 누르면 메모가 지워져요.', 'Select an empty cell and choose a number. Use Notes mode to enter candidates. Tap the same number again to remove a note.')}</p><p>{t('고급 메모는 현재 보드를 기준으로 모든 빈칸의 후보를 한 번에 새로 채워요. 기존 메모는 교체되며 되돌리기로 복원할 수 있어요. 숫자를 입력한 뒤 다시 누르면 후보가 갱신돼요.', 'Auto notes replaces all empty-cell notes with the candidates allowed by the current board. Undo restores your previous notes. Use it again after entering numbers to refresh the candidates.')}</p><p>{t('9개가 채워진 숫자는 입력판에서 사라져요. 지우거나 되돌리면 다시 나타나요.', 'A number disappears from the keypad when nine copies are on the board. Erase or undo to make it available again.')}</p><p>{t('힌트는 단일 후보, 후보 잠금, 후보 쌍, X-Wing까지 순서대로 설명하고 한 칸을 채워줘요. 잘못 입력한 숫자가 있으면 먼저 수정을 안내해요.', 'Hints explain singles, locked candidates, pairs and X-Wing steps, then fill one cell. If an entry is wrong, a hint asks you to correct it first.')}</p><p>{t('방향키로 이동, Delete로 지우기, N으로 메모 전환, Ctrl/⌘+Z로 되돌리기.', 'Use arrow keys to move, Delete to erase, N to toggle notes and Ctrl/⌘+Z to undo.')}</p><button className="primary" onClick={()=>setHelp(false)}><Check size={16}/>{t('알겠어요', 'Got it')}</button></>}
     </section></div>}
   </>;
 }

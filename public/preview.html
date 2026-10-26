@@ -17,7 +17,24 @@
   </style>
 </head>
 <body>
-  <header><div>하루 스도쿠 · 모바일 미리보기<p>앱과 같은 모바일 화면입니다. 설치 없이 바로 플레이할 수 있어요.</p></div><a href="./" target="_top">전체 화면으로 보기</a></header>
-  <main><div class="phone"><iframe src="./" title="하루 스도쿠 모바일 게임"></iframe></div></main>
+  <header><div><span id="preview-title">하루 스도쿠 · 모바일 미리보기</span><p id="preview-description">앱과 같은 모바일 화면입니다. 설치 없이 바로 플레이할 수 있어요.</p></div><a id="preview-fullscreen" href="./" target="_top">전체 화면으로 보기</a></header>
+  <main><div class="phone"><iframe id="preview-game" src="./" title="하루 스도쿠 모바일 게임"></iframe></div></main>
+  <script>
+    function updateLanguage() {
+      let english = false;
+      try { english = localStorage.getItem('haru-sudoku:language:v1') === 'en'; } catch {}
+      document.documentElement.lang = english ? 'en' : 'ko';
+      const title = english ? 'Haru Sudoku · Mobile preview' : '하루 스도쿠 · 모바일 미리보기';
+      document.title = title;
+      document.getElementById('preview-title').textContent = title;
+      document.getElementById('preview-description').textContent = english ? 'Play the mobile app interface here. No installation needed.' : '앱과 같은 모바일 화면입니다. 설치 없이 바로 플레이할 수 있어요.';
+      document.getElementById('preview-fullscreen').textContent = english ? 'Open full screen' : '전체 화면으로 보기';
+      document.getElementById('preview-game').title = english ? 'Haru Sudoku mobile game' : '하루 스도쿠 모바일 게임';
+    }
+    updateLanguage();
+    window.addEventListener('storage', event => {
+      if (event.key === 'haru-sudoku:language:v1' || event.key === null) updateLanguage();
+    });
+  </script>
 </body>
 </html>
