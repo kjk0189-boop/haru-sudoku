@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, Eraser, Leaf, Lightbulb, Pause, Pencil, Play, RotateCcw, BookOpen, MoreHorizontal, ShieldCheck, Sparkles, Undo2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, Eraser, Grid2X2, Lightbulb, Pause, Pencil, Play, RotateCcw, BookOpen, MoreHorizontal, ShieldCheck, Sparkles, Undo2, X } from 'lucide-react';
 import { conflicts, isComplete, type Difficulty } from './game';
 import { requestPuzzle, readRecent, rememberPuzzle, RECENT_KEY } from './generator-client';
 import { STARTER_PUZZLE } from './starter';
@@ -238,9 +238,9 @@ export default function App() {
       onDaily={openDaily} onGuide={()=>openOverlay('settings')} classic={library.classic} dailySessions={library.daily}
       profile={profile} today={today} storageFailed={saveFailed}/></div>}
     {view === 'game' && <>
-    <header className="site-header" inert={!!blocking}><button type="button" className="brand brand-home" onClick={leaveGame} aria-label="홈으로"><ArrowLeft size={20}/><span className="brand-icon"><Leaf size={22} /></span>하루 스도쿠<span className="brand-dot">.</span></button><div className="header-right"><span className="header-tag">하루의 작은 몰입</span><button className="icon-button desktop-guide" aria-label="게임 안내" onClick={() => openOverlay('settings')}><BookOpen size={20}/></button><button className="icon-button mobile-only mobile-more" aria-label="더보기" aria-haspopup="dialog" aria-expanded={panel==='menu'} aria-controls="game-dialog" onClick={()=>openOverlay('menu')}><MoreHorizontal size={22}/></button></div></header>
+    <header className="site-header" inert={!!blocking}><button type="button" className="brand brand-home" onClick={leaveGame} aria-label="홈으로"><ArrowLeft size={20}/><span className="brand-icon"><Grid2X2 size={22} /></span>하루 스도쿠</button><div className="header-right"><span className="header-tag">클래식 · 매일 도전</span><button className="icon-button desktop-guide" aria-label="게임 안내" onClick={() => openOverlay('settings')}><BookOpen size={20}/></button><button className="icon-button mobile-only mobile-more" aria-label="더보기" aria-haspopup="dialog" aria-expanded={panel==='menu'} aria-controls="game-dialog" onClick={()=>openOverlay('menu')}><MoreHorizontal size={22}/></button></div></header>
     <main onKeyDown={keydown} inert={!!blocking}>
-      <section className="intro"><div className="eyebrow"><span/> A LITTLE PAUSE, A CLEARER MIND</div><h1>복잡한 하루에,<br className="mobile-break"/> 단순한 즐거움.</h1><p>숫자 하나에 집중하다 보면, 마음도 조금 가벼워질 거예요.</p></section>
+      <section className="intro"><h1>하루 스도쿠</h1><p>가로, 세로, 3×3 상자에 1부터 9까지.</p></section>
       <div className="workspace">
         <section className="game-panel" aria-label="스도쿠 게임">
           <div className="game-top"><div className="difficulty-badge"><span/>{session.mode==='daily'?'매일 도전':'클래식'} · {LABELS[puzzle.difficulty]}<span className="badge-divider">/</span><span className="puzzle-label">클래식 9 × 9</span></div><div className="timer"><Clock3 size={16}/><span>{time(session.elapsed)}</span><button aria-label={paused ? '게임 계속하기' : '게임 일시정지'} className="icon-button small" disabled={generating||complete} onClick={() => setPaused(v => !v)}>{paused ? <Play size={15}/> : <Pause size={15}/>}</button></div></div>
@@ -248,20 +248,21 @@ export default function App() {
             <div ref={boardRef} className={`board ${paused ? 'is-paused' : ''}`} role="grid" aria-label="스도쿠 9행 9열">
               {Array.from({length:9},(_,r) => <div role="row" className="board-row" key={r}>{session.board.slice(r*9,r*9+9).map((v,c) => {
                 const i=r*9+c, sr=selected===null?-1:Math.floor(selected/9), sc=selected===null?-1:selected%9;
+                const incorrect=!!v&&!puzzle.givens[i]&&v!==puzzle.solution[i];
                 const related=selected!==null&&(sr===r||sc===c||(Math.floor(sr/3)===Math.floor(r/3)&&Math.floor(sc/3)===Math.floor(c/3)));
-                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&errors.has(i)} disabled={generating||paused} aria-label={`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&errors.has(i)?', 숫자 중복':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${errors.has(i)?'conflict':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
+                return <button key={i} role="gridcell" tabIndex={i===(selected??0)?0:-1} aria-selected={selected===i} aria-readonly={!!puzzle.givens[i]} aria-invalid={!paused&&(errors.has(i)||incorrect)} disabled={generating||paused} aria-label={`${r+1}행 ${c+1}열, ${paused?'숨김':v||'빈칸'}${puzzle.givens[i]?', 고정 숫자':''}${!paused&&errors.has(i)?', 숫자 중복':!paused&&incorrect?', 정답과 다름':''}${!paused&&session.notes[i].length?`, 메모 ${session.notes[i].join(', ')}`:''}`} onFocus={() => setSelected(i)} onClick={() => setSelected(i)} className={`cell ${puzzle.givens[i]?'given':''} ${related?'related':''} ${v&&v===selectedValue?'same':''} ${selected===i?'selected':''} ${errors.has(i)?'conflict':''} ${incorrect?'incorrect':''} ${c===2||c===5?'box-right':''} ${r===2||r===5?'box-bottom':''}`}>
                   {!paused&&(v||<span className="notes">{Array.from({length:9},(_,n)=><span key={n}>{session.notes[i].includes(n+1)?n+1:''}</span>)}</span>)}
                 </button>;
               })}</div>)}
             </div>
             {generating&&<div className="pause-overlay generation-overlay" role="status"><span className="generation-spinner"/><h2>새로운 문제를 만들고 있어요</h2><p>정답과 난이도를 꼼꼼히 확인하고 있어요.<br/>전문가 문제는 조금 더 걸릴 수 있어요.</p><button className="secondary" onClick={()=>generation.current?.abort()}>생성 취소</button></div>}
-            {paused&&!generating&&<div className="pause-overlay"><span className="pause-circle"><Pause size={27}/></span><h2>잠깐 쉬어가세요</h2><p>게임은 여기서 기다리고 있을게요.</p><button className="primary" onClick={()=>setPaused(false)}><Play size={16}/> 이어서 풀기</button></div>}
+            {paused&&!generating&&<div className="pause-overlay"><span className="pause-circle"><Pause size={27}/></span><h2>잠깐 쉬어가세요</h2><p>진행 상황은 자동으로 저장됩니다.</p><button className="primary" onClick={()=>setPaused(false)}><Play size={16}/> 이어서 풀기</button></div>}
           </div>
           <div className="board-bottom"><span><span className="status-dot"/>{complete?'퍼즐 완성!':paused?'잠시 쉬는 중':`실수 ${session.mistakes ?? 0} · ${session.mode==='daily'?session.dayKey:'나만의 속도로'}`}</span><span><b>{filled}</b> / 81</span></div>
         </section>
         <aside className="controls">
           <div className="control-heading"><span className="section-label">MY SUDOKU</span><span className="live-label"><span/>{generating?'문제 준비 중':complete?'완성':'진행 중'}</span></div>
-          <h2>작은 한 칸부터.</h2><p className="control-description">정답은 서두르지 않아도 괜찮아요.</p>
+          <h2>숫자 입력</h2><p className="control-description">빈칸을 선택하고 숫자를 입력하세요.</p>
           <label className="field-label" htmlFor="difficulty">난이도 선택</label><div className="select-wrap"><select disabled={generating} id="difficulty" value={difficulty} onChange={e=>setDifficulty(e.target.value as Difficulty)}>{Object.entries(LABELS).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><ChevronDown size={16}/></div>
           <button disabled={generating} className="primary new-game" onClick={()=>openOverlay('new')}>새 게임 시작<ArrowRight size={17}/></button>
           <p className="difficulty-description">{DESCRIPTIONS[difficulty]}</p>
@@ -281,10 +282,10 @@ export default function App() {
       </div>
       <div className={`message ${showCompletion?'completed':''}`} role="status" aria-live="polite">{showCompletion?<Sparkles size={19}/>:<Lightbulb size={18}/>}<span>{showCompletion?`멋져요! ${time(session.elapsed)} 동안 집중해서 완성했어요. 힌트 ${session.hints}회 사용.`:message}</span></div>
       <div className="mobile-status mobile-only" role="status" aria-live="polite"><button aria-haspopup="dialog" onClick={()=>openOverlay('hint')}><span>{saveFailed?'자동 저장을 할 수 없어요. 브라우저 저장 설정을 확인해 주세요.':statusText}</span><ChevronDown size={15}/></button></div>
-      <section className="tips"><span className="tip-icon"><Leaf size={21}/></span><div><h3>스도쿠, 이렇게 즐겨요</h3><p>가로, 세로, 3×3 상자마다 1부터 9까지 한 번씩 채워주세요.</p></div><button onClick={()=>openOverlay('help')}>플레이 가이드<ArrowRight size={15}/></button></section>
+      <section className="tips"><span className="tip-icon"><Grid2X2 size={21}/></span><div><h3>스도쿠, 이렇게 즐겨요</h3><p>가로, 세로, 3×3 상자마다 1부터 9까지 한 번씩 채워주세요.</p></div><button onClick={()=>openOverlay('help')}>플레이 가이드<ArrowRight size={15}/></button></section>
       <p className="keyboard-guide">키보드로도 편하게 <kbd>1–9</kbd> 숫자 입력 <span>·</span> <kbd>↑ ↓ ← →</kbd> 이동 <span>·</span> <kbd>N</kbd> 메모</p>
     </main>
-    <footer inert={!!blocking}><span className="footer-brand">하루 스도쿠<span>.</span></span><p>오늘도, 한 칸만큼의 여유.</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+    <footer inert={!!blocking}><span className="footer-brand">하루 스도쿠<span>.</span></span><p>클래식과 매일 도전</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
     </>}
     {blocking&&<div className={`modal-backdrop ${panel?'sheet-backdrop':''}`}><section id="game-dialog" className={`modal ${settings?'game-guide':''} ${panel?'bottom-sheet':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label="닫기" onClick={closeOverlays}><X size={20}/></button>
       {generating && view !== 'game'?<><span className="generation-spinner"/><h2 id="modal-title">게임을 준비하고 있어요</h2><p>정답과 난이도를 확인하고 있어요.</p><button className="secondary" onClick={()=>generation.current?.abort()}>생성 취소</button></>:panel==='menu'?<>
@@ -305,7 +306,7 @@ export default function App() {
         <h2 id="modal-title">{view==='game' && showCompletion?'퍼즐 완성':'풀이 안내'}</h2>
         <p className="hint-explanation">{saveFailed?'자동 저장을 할 수 없어요. 브라우저 저장 설정을 확인해 주세요.':view==='game'?statusText:message}</p>
         <button className="primary" onClick={()=>setPanel(null)}>{view==='game'?'확인하고 계속 풀기':'확인'}<Check size={16}/></button>
-      </>:dialog?<><span className="modal-icon"><Leaf size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2>{dialog==='new'&&<div className="new-game-tiers" role="group" aria-label="새 게임 난이도">{Object.entries(LABELS).map(([key,label])=><button key={key} aria-pressed={difficulty===key} className={difficulty===key?'is-active':''} onClick={()=>setDifficulty(key as Difficulty)}>{label}<small>{DESCRIPTIONS[key as Difficulty]}</small></button>)}</div>}<p>{dialog==='restart'?'현재 문제를 새 시도로 시작합니다. 이전 시도는 내 기록에 남습니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 클래식 진행 중인 게임은 내 기록에 보관하고 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<>
+      </>:dialog?<><span className="modal-icon"><Grid2X2 size={26}/></span><h2 id="modal-title">{dialog==='restart'?'처음부터 다시 풀까요?':'새 퍼즐을 시작할까요?'}</h2>{dialog==='new'&&<div className="new-game-tiers" role="group" aria-label="새 게임 난이도">{Object.entries(LABELS).map(([key,label])=><button key={key} aria-pressed={difficulty===key} className={difficulty===key?'is-active':''} onClick={()=>setDifficulty(key as Difficulty)}>{label}<small>{DESCRIPTIONS[key as Difficulty]}</small></button>)}</div>}<p>{dialog==='restart'?'현재 문제를 새 시도로 시작합니다. 이전 시도는 내 기록에 남습니다.':`${LABELS[difficulty]} 난이도의 새로운 문제를 시작해요. 클래식 진행 중인 게임은 내 기록에 보관하고 새 게임으로 바뀝니다.`}</p><div className="modal-actions"><button className="secondary" onClick={()=>setDialog(null)}>계속 풀기</button><button className="primary" onClick={start}>시작하기<ArrowRight size={16}/></button></div></>:settings?<>
         <h2 id="modal-title">게임 안내</h2>
         <h3>기본 규칙</h3>
         <ul>

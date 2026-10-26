@@ -126,3 +126,10 @@
 - 다운로드한 APK 크기 4,250,891바이트. SHA256 `487337ED26428681B6CB261BC01EDAA5AA9AE328F65AB7C46854BF175B7A0495`. ZIP 무결성과 내장 index/Worker, 원격 server 설정 없음 확인. artifact `haru-sudoku-debug`에 APK 보관.
 - [홈 화면](../assets/app-home.png) · [게임 화면](../assets/app-game.png) · [기록 화면](../assets/app-records.png).
 - 미검증: 연결 기기/에뮬레이터가 없어 APK 실행·설치와 실제 터치·안전 영역·뒤로가기·오프라인 성능은 확인하지 못했다. 관련 이벤트 연결과 패키지 구성을 재검토했지만 네이티브 실행을 대체하지 않는다. 휴대폰에서 [설치 후 확인 항목](android-app.md)을 진행해야 한다.
+
+## 2026-10-26 / 네이비 디자인·내장 폰트·모바일 웹 미리보기
+- 62개 자동 테스트·TypeScript 검사·Vite 빌드·AST 그래프 생성 통과. codegraph 도구가 없어 기존 AST import 그래프를 대체 사용했다.
+- 빌드된 앱을 로컬 서버에서 확인: 홈과 게임 모두 320×568, 375×667, 390×844에서 문서 높이=뷰포트 높이, 가로 넘침 없음. 이어하기가 있는 홈도 포함한다.
+- 실제 iframe 미리보기에서 새 쉬움 Worker 문제 생성·게임 진입·새 게임 선택창 확인. body Pretendard / cell Manrope computed style 확인. document.fonts.check는 한글 Pretendard와 게임 숫자 Manrope 모두 true. 콘솔 오류·경고 0건.
+- 중복 숫자 입력 시 관련 고정 칸과 사용자 칸에 버건디 rgb(136,62,82), 연한 오류 배경 적용 확인. 중복 없는 오답도 같은 색과 aria-invalid=true, `정답과 다름` 이름 확인. 되돌리기 후 false 복원 확인.
+- 미검증: 이번에는 새 APK를 빌드·설치하지 않았다. 기존 APK는 이전 디자인이다. 폰트 내장·UI 코드 경로를 재검토했으나 실제 Android 글꼴 렌더·터치·안전 영역은 기기가 없어 확인하지 못했다.

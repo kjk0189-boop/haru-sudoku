@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, BarChart3, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Flame, Grid2X2, House, Leaf, Play, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Grid2X2, House, Play, Smartphone, Trophy } from 'lucide-react';
 import { isComplete, type Difficulty } from './game';
 import { puzzleFor, type Session } from './session';
 import { calendarDays, dailyDifficulty, koreaDayKey, summarizeProfile, type PlayerProfile } from './player';
@@ -51,37 +51,35 @@ export default function Lobby({ tab, onTab, onNewClassic, onContinueClassic, onD
 
   return <div className={`lobby-shell lobby-screen-${tab}`}>
     <header className="lobby-header">
-      <div className="lobby-wordmark"><span><Leaf size={21}/></span>하루 스도쿠<b>.</b></div>
-      <button className="lobby-guide-button" aria-label="게임 안내" onClick={onGuide}><BookOpen size={21}/></button>
+      <div className="lobby-wordmark"><span><Grid2X2 size={20}/></span>하루 스도쿠</div>
+      <div className="lobby-header-actions"><a className="lobby-preview-link" href="./preview.html"><Smartphone size={17}/>모바일 화면 보기</a><button className="lobby-guide-button" aria-label="게임 안내" onClick={onGuide}><BookOpen size={21}/></button></div>
     </header>
     <main className={`lobby-page lobby lobby-page-${tab}`}>
       {storageFailed && <p className="lobby-storage-warning" role="alert">기록을 저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.</p>}
       {tab === 'home' ? <>
         <section className="lobby-welcome">
-          <div><span className="lobby-eyebrow">A MOMENT FOR YOURSELF</span><h1>오늘도,<br/>한 칸의 여유.</h1><p>작은 집중으로 하루를 가볍게.</p></div>
-          <div className="lobby-grid-art" aria-hidden="true">{[1,0,3,0,0,6,7,0,9].map((value, i) => <span key={i} className={value ? '' : 'lobby-grid-empty'}>{value || <Leaf size={15}/>}</span>)}</div>
+          <div><h1>한 판 풀어볼까요?</h1><p>이어서 풀거나, 새로운 문제를 골라보세요.</p></div>
         </section>
 
         <button className={`lobby-daily-card ${todayComplete ? 'lobby-daily-done' : ''}`} onClick={() => onDaily(today)}>
           <span className="lobby-daily-icon">{todayComplete ? <Check size={26}/> : <CalendarDays size={26}/>}</span>
-          <span className="lobby-daily-copy"><span>DAILY CHALLENGE</span><strong>{todayComplete ? '오늘의 도전 완료' : '오늘의 도전'}</strong><small>{shortDate(today)} · {LABELS[dailyDifficulty(today)]}</small></span>
+          <span className="lobby-daily-copy"><span>매일 도전</span><strong>{todayComplete ? '오늘의 문제 완료' : '오늘의 문제'}</strong><small>{shortDate(today)} · {LABELS[dailyDifficulty(today)]}</small></span>
           <span className="lobby-card-arrow"><ArrowRight size={19}/></span>
         </button>
 
         <section className="lobby-classic-card" aria-label="클래식 스도쿠">
-          <div className="lobby-card-title"><span className="lobby-classic-icon"><Grid2X2 size={22}/></span><div><h2>클래식 스도쿠</h2><p>내 속도에 맞는 네 가지 난이도</p></div></div>
-          <div className="lobby-tier-preview">{Object.values(LABELS).map((label, i) => <span key={label}><i>{Array.from({ length: i + 1 }, (_, j) => <b key={j}/>)}</i>{label}</span>)}</div>
+          <div className="lobby-card-title"><span className="lobby-classic-icon"><Grid2X2 size={22}/></span><div><h2>클래식 스도쿠</h2><p>원하는 난이도로 자유롭게</p></div></div>
           {canContinue && <button className="lobby-button lobby-button-primary lobby-continue" onClick={onContinueClassic}><span><Play size={16}/>이어서 풀기</span><small>{LABELS[classicPuzzle!.difficulty]} · {TIME_LABEL(classic!.elapsed)}</small></button>}
           <button className={`lobby-button ${canContinue ? 'lobby-button-outline' : 'lobby-button-primary'}`} onClick={onNewClassic}><span>새로운 게임</span><ArrowRight size={17}/></button>
         </section>
 
         <div className="lobby-home-bottom">
-          <button className="lobby-progress-preview" onClick={() => onTab('records')}><span><Trophy size={18}/><b>{allSummary.completed}</b>번의 작은 성취</span><ChevronRight size={16}/></button>
-          <p className="lobby-free-note"><Sparkles size={14}/>힌트 · 자동 메모, 지금은 모두 무료</p>
+          <button className="lobby-progress-preview" onClick={() => onTab('records')}><span>완료한 게임 <b>{allSummary.completed}회</b></span><span>내 기록<ChevronRight size={16}/></span></button>
+          <p className="lobby-free-note">힌트와 자동 메모는 무료로 사용할 수 있어요.</p>
         </div>
       </> : tab === 'daily' ? <>
-        <section className="lobby-section-intro"><span className="lobby-eyebrow">ONE PUZZLE, EVERY DAY</span><h1>매일 도전</h1><p>하루 한 문제, 차곡차곡 쌓이는 집중.</p></section>
-        <button className="lobby-today-button" onClick={() => onDaily(today)}><span className="lobby-today-symbol">{todayComplete ? <Check size={23}/> : <Flame size={23}/>}</span><span><strong>{todayComplete ? '오늘의 도전을 완성했어요' : '오늘의 문제 풀기'}</strong><small>{shortDate(today)} · {LABELS[dailyDifficulty(today)]}</small></span><ArrowRight size={19}/></button>
+        <section className="lobby-section-intro"><h1>매일 도전</h1><p>날짜를 골라 하루 한 문제씩 풀어보세요.</p></section>
+        <button className="lobby-today-button" onClick={() => onDaily(today)}><span className="lobby-today-symbol">{todayComplete ? <Check size={23}/> : <CalendarDays size={23}/>}</span><span><strong>{todayComplete ? '오늘의 문제 완료' : '오늘의 문제 풀기'}</strong><small>{shortDate(today)} · {LABELS[dailyDifficulty(today)]}</small></span><ArrowRight size={19}/></button>
         <section className="lobby-calendar" aria-label="매일 도전 달력">
           <div className="lobby-calendar-heading"><button aria-label="이전 달" onClick={() => moveMonth(-1)} disabled={monthKey <= '2000-01'}><ChevronLeft size={20}/></button><h2>{year}년 {month}월</h2><button aria-label="다음 달" onClick={() => moveMonth(1)} disabled={monthKey >= today.slice(0, 7)}><ChevronRight size={20}/></button></div>
           <div className="lobby-calendar-grid">{['일','월','화','수','목','금','토'].map((name, i) => <span className={`lobby-weekday ${i === 0 ? 'lobby-sunday' : ''}`} key={name}>{name}</span>)}
@@ -97,7 +95,7 @@ export default function Lobby({ tab, onTab, onNewClassic, onContinueClassic, onD
         </section>
         <div className="lobby-daily-summary"><span className="lobby-summary-icon"><Trophy size={22}/></span><div><strong>{allSummary.dailyCompleted}일의 도전을 완성했어요</strong><p>지나간 날짜도 선택해서 풀 수 있어요.</p></div></div>
       </> : <>
-        <section className="lobby-section-intro"><span className="lobby-eyebrow">YOUR LITTLE ACHIEVEMENTS</span><h1>내 기록</h1><p>정답보다 소중한, 나만의 집중 기록.</p></section>
+        <section className="lobby-section-intro"><h1>내 기록</h1><p>지금까지 풀어온 게임을 확인하세요.</p></section>
         <div className="lobby-filters" aria-label="기록 난이도 필터">{(['all','easy','medium','hard','expert'] as const).map(value => <button key={value} aria-pressed={filter === value} className={filter === value ? 'is-active' : ''} onClick={() => setFilter(value)}>{value === 'all' ? '전체' : LABELS[value]}</button>)}</div>
         <div className="lobby-mode-filter" aria-label="기록 모드 필터">{(['all','classic','daily'] as const).map(value => <button key={value} aria-pressed={modeFilter === value} className={modeFilter === value ? 'is-active' : ''} onClick={() => setModeFilter(value)}>{value === 'all' ? '모든 모드' : value === 'classic' ? '클래식' : '매일 도전'}</button>)}</div>
         <section className="lobby-stat-grid" aria-label="플레이 통계">
@@ -107,7 +105,7 @@ export default function Lobby({ tab, onTab, onNewClassic, onContinueClassic, onD
           <div className="lobby-stat"><BarChart3 size={20}/><span>평균 시간</span><strong className="lobby-time-value">{TIME_LABEL(summary.averageSeconds)}</strong><p>완료한 게임 기준</p></div>
         </section>
         <div className="lobby-total-time"><span>누적 플레이 시간</span><strong>{Math.floor(summary.totalSeconds / 60)}분</strong><span>힌트 {summary.totalHints}회 · 실수 {summary.totalMistakes}회</span></div>
-        <section className="lobby-recent"><h2>최근 플레이 <span>최근 10개</span></h2>{recent.length ? <ul>{recent.map(record => <li key={record.id}><span className={`lobby-record-symbol ${record.status === 'completed' ? 'is-complete' : ''}`}>{record.status === 'completed' ? <Check size={17}/> : <Grid2X2 size={17}/>}</span><div><strong>{record.mode === 'daily' ? '매일 도전' : '클래식'} · {LABELS[record.difficulty]}</strong><small>{record.mode === 'daily' && record.dayKey ? shortDate(record.dayKey) : shortDate(koreaDayKey(new Date(record.startedAt)))} · 힌트 {record.hints}회</small></div><span className="lobby-record-result"><b>{TIME_LABEL(record.elapsed)}</b><small>{record.status === 'completed' ? '완료' : record.status === 'abandoned' ? '중단' : '진행 중'}</small></span></li>)}</ul> : <div className="lobby-empty"><Leaf size={29}/><strong>아직 기록이 없어요</strong><p>한 칸씩 채우면 나만의 기록도 쌓여요.</p><button onClick={onNewClassic}>첫 게임 시작하기<ArrowRight size={16}/></button></div>}</section>
+        <section className="lobby-recent"><h2>최근 플레이 <span>최근 10개</span></h2>{recent.length ? <ul>{recent.map(record => <li key={record.id}><span className={`lobby-record-symbol ${record.status === 'completed' ? 'is-complete' : ''}`}>{record.status === 'completed' ? <Check size={17}/> : <Grid2X2 size={17}/>}</span><div><strong>{record.mode === 'daily' ? '매일 도전' : '클래식'} · {LABELS[record.difficulty]}</strong><small>{record.mode === 'daily' && record.dayKey ? shortDate(record.dayKey) : shortDate(koreaDayKey(new Date(record.startedAt)))} · 힌트 {record.hints}회</small></div><span className="lobby-record-result"><b>{TIME_LABEL(record.elapsed)}</b><small>{record.status === 'completed' ? '완료' : record.status === 'abandoned' ? '중단' : '진행 중'}</small></span></li>)}</ul> : <div className="lobby-empty"><Grid2X2 size={29}/><strong>아직 기록이 없어요</strong><p>게임을 시작하면 여기에 기록이 쌓여요.</p><button onClick={onNewClassic}>첫 게임 시작하기<ArrowRight size={16}/></button></div>}</section>
         <p className="lobby-local-note">기록은 이 기기에 저장돼요. 앱을 삭제하거나 데이터를 지우면 함께 삭제될 수 있어요.</p>
       </>}
     </main>

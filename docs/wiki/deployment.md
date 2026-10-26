@@ -34,3 +34,6 @@ Vite의 상대 base(`./`)와 단일 화면 구조를 사용해 저장소 하위 
 
 ## 개인 Android APK
 [앱 설계와 설치 안내](android-app.md)를 따른다. `.github/workflows/android-apk.yml`을 수동 실행한다. 웹 변경은 기존 Pages 워크플로로 별도 배포되며, APK는 다시 빌드하고 설치해야 변경된다.
+
+## 설치 없이 모바일 디자인 검토
+[모바일 미리보기](https://kjk0189-boop.github.io/haru-sudoku/preview.html)는 동일한 게임을 PC에서도 모바일 너비로 보여준다. PC 홈 상단 `모바일 화면 보기`에서도 연다. 디자인 수정은 Pages 배포 후 웹에서 확인할 수 있다. [설계](visual-design.md).
