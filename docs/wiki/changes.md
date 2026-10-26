@@ -57,3 +57,5 @@
 - Capacitor Android 프로젝트와 수동 APK 빌드 Actions 추가. 테스트 APK를 직접 설치할 수 있도록 준비했다.
 - 기존 저장 이전, 완료 중복 방지, 클래식/날짜별 진행 분리, 날짜 검증과 손상 기록 필터를 추가했다.
 - 62개 테스트, 타입 검사·웹 빌드·Android 자산 동기화 통과. 실기기 설치·네이티브 동작은 기기 부재로 미검증. 배포·APK 빌드 실제 결과는 검증 기록에 이어 기록한다.
+
+- 실제 반영 확인 완료: [Pages 40278657730](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40278657730), [APK 40278664488](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40278664488) 성공. 공개 홈·기록·달력과 기존 저장 이전 확인. APK 서명·manifest·내장 자산 확인, 실기기 실행은 미검증.

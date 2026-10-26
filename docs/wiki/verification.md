@@ -118,3 +118,11 @@
 - codegraph 도구가 없어 기존 TypeScript AST import 그래프를 대체 사용한다.
 - 실기기 설치·오프라인·네이티브 뒤로가기·시스템 안전 영역은 기기 부재로 미검증. 브라우저 검증과 빌드 성공으로 대체하지 않는다.
 - 첫 APK 실행 40278475046은 `sdkmanager: command not found`로 실패했다. SDK 설치 Action을 명시적으로 추가하고 재실행한다. 생성된 Android 샘플 테스트는 실제 앱 검증이 아니므로 제거했다.
+
+### 배포·APK 실제 확인
+- 구현 커밋 `3208460`, SDK 보완 커밋 `1c56c07`. [Pages 40278657730](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40278657730) 성공. 공개 주소에서 홈·내 기록·달력 확인, 기존 완료 게임 1회 이전, 브라우저 오류 0건. 375×667 공개 홈 스크롤 없음. 달력과 긴 기록 화면에는 내용 스크롤을 허용한다.
+- 로컬 매일 도전에서 무료 힌트 57회로 완주, 완료 1회·시간·힌트 집계 확인. 새로고침 후 완료 1회 유지, 별도 클래식 메모 51칸 복원 확인.
+- [Android APK 40278664488](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40278664488) 성공: 62개 테스트·웹 빌드·그래프 검사·SDK 설치·Gradle assembleDebug·apksigner 검증·aapt manifest 확인. APK v2 서명 유효, 앱 ID와 이름 일치, min API 24, target API 36.
+- 다운로드한 APK 크기 4,250,891바이트. SHA256 `487337ED26428681B6CB261BC01EDAA5AA9AE328F65AB7C46854BF175B7A0495`. ZIP 무결성과 내장 index/Worker, 원격 server 설정 없음 확인. artifact `haru-sudoku-debug`에 APK 보관.
+- [홈 화면](../assets/app-home.png) · [게임 화면](../assets/app-game.png) · [기록 화면](../assets/app-records.png).
+- 미검증: 연결 기기/에뮬레이터가 없어 APK 실행·설치와 실제 터치·안전 영역·뒤로가기·오프라인 성능은 확인하지 못했다. 관련 이벤트 연결과 패키지 구성을 재검토했지만 네이티브 실행을 대체하지 않는다. 휴대폰에서 [설치 후 확인 항목](android-app.md)을 진행해야 한다.

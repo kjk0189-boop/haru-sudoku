@@ -35,3 +35,8 @@
 
 ## 검증 범위와 남은 일
 자동 테스트와 브라우저 확인 결과는 [검증 기록](verification.md)에 기록한다. 이 PC에는 Java·Android SDK·연결된 Android 기기가 없어 로컬 네이티브 빌드와 실기기 설치·안전 영역·성능을 확인할 수 없다. GitHub APK 컴파일 성공도 실기기 검증을 대신하지 않는다.
+
+## 이번 테스트 파일
+- [성공한 APK 빌드와 다운로드 artifact](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40278664488): `haru-sudoku-debug` ZIP 내부 APK, 4.25 MB.
+- 웹 UI는 [공개 게임](https://kjk0189-boop.github.io/haru-sudoku/)에도 반영했다.
+- [홈 화면 증거](../assets/app-home.png), [게임 화면](../assets/app-game.png), [내 기록](../assets/app-records.png).
