@@ -38,6 +38,11 @@ jobs:
       - name: Synchronize Android assets
         run: pnpm exec cap sync android
       - name: Ensure Android SDK platform
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Check SDK platform
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Assemble personal test APK
         working-directory: android
