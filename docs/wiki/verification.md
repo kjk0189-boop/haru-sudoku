@@ -152,3 +152,8 @@
 - 미리보기 부모의 제목/문구도 저장 언어와 프레임 변경에 동기화됨을 확인.
 - 추가 검토: iframe 자동 검증 중 콘솔 수집에 `MutationObserver.observe: parameter 1 is not of type Node`가 보였다. 앱 소스에 해당 호출 없음, 부모/자식 페이지 초기 error 이벤트 계측에서 수집 0건, 페이지 렌더·언어·조작 정상. 출처/스택을 도구가 제공하지 않아 원인은 확정하지 못했다. 임시 계측은 모두 제거하고 빌드 재통과. 검사 도구와 페이지 오류를 동일시하지 않으며 추적 사항으로 남긴다.
 - 새 APK 빌드·실제 Android 언어 저장/안전 영역/터치는 기기 부재 및 이번 웹 수정 범위로 미검증. 웹 검증으로 대체하지 않는다.
+
+### 공개 반영 확인
+- 구현 `3854455`, [Pages 40288093775](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40288093775) 테스트·타입·웹 빌드·그래프 검사·배포 성공.
+- 공개 `/preview.html`에서 내 기록 언어 선택, 영어 UI와 날짜별 재개 목록, `Start a new medium puzzle.`와 네 난이도 이름만 있는 창, 한국어 저장 안내 확인. 영어 검사 후 한국어로 복원했으며 공개 진행 게임은 시작·재개하지 않았다.
+- [완료·진행 중·오늘 구분](../assets/daily-status.png), [공개 영어 기록 화면](../assets/english-records.png), [간결한 난이도 창](../assets/new-game-simple.png).
