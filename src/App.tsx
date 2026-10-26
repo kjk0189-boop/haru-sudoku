@@ -7,6 +7,7 @@ import Lobby, { type LobbyTab } from './Lobby';
 import { emptyLibrary, identifySession, putSession, restoreLibrary, LIBRARY_KEY, PROFILE_KEY } from './library';
 import { abandonRecord, dailyDifficulty, dailySeed, koreaDayKey, restoreProfile, upsertRecord, type GameMode } from './player';
 import { assessAccess } from './access';
+import { getCompletionResult } from './completion';
 import { useI18n } from './i18n';
 import { translateGameMessage } from './game-messages';
 import { minimizeNativeApp, useNativeEvents } from './useNativeEvents';
@@ -195,7 +196,8 @@ export default function App() {
       boardRef.current?.querySelectorAll<HTMLButtonElement>('[role="gridcell"]')[next]?.focus();
     }
   }
-  const blocking = generating && view !== 'game' ? 'generating' : dialog || settings || help || panel;
+  const result = view === 'game' && showCompletion ? getCompletionResult(profile, session) : null;
+  const blocking = result ? 'result' : generating && view !== 'game' ? 'generating' : dialog || settings || help || panel;
   const statusText = showCompletion ? t(`멋져요! ${time(session.elapsed)} 동안 집중해서 완성했어요. 힌트 ${session.hints}회 사용.`, `Puzzle complete in ${time(session.elapsed)}. Hints used: ${session.hints}.`) : translateGameMessage(message, language);
   function openOverlay(kind: 'menu' | 'hint' | 'settings' | 'help' | 'new' | 'restart') {
     if (!modalTrigger.current) modalTrigger.current = document.activeElement as HTMLElement;
@@ -209,7 +211,7 @@ export default function App() {
   useEffect(() => {
     if (!blocking) {
       if (modalTrigger.current) {
-        const targets = [modalTrigger.current, document.querySelector<HTMLElement>('.mobile-more'), document.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]'), document.querySelector<HTMLElement>('.desktop-guide')];
+        const targets = [modalTrigger.current, document.querySelector<HTMLElement>('.mobile-more'), document.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]'), document.querySelector<HTMLElement>('.desktop-guide'), document.querySelector<HTMLElement>('.lobby-nav button[aria-current="page"]')];
         targets.find(target => target?.isConnected && target.getClientRects().length > 0 && !target.matches(':disabled') && !target.closest('[inert]'))?.focus();
       }
       modalTrigger.current = null;
@@ -219,9 +221,9 @@ export default function App() {
     if (!modalTrigger.current) modalTrigger.current = document.activeElement as HTMLElement;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    element?.querySelector<HTMLElement>('button, select, input')?.focus();
+    element?.querySelector<HTMLElement>(blocking === 'result' ? '[data-result-home]' : 'button, select, input')?.focus();
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeOverlays();
+      if (e.key === 'Escape') { if (result) leaveGame(); else closeOverlays(); }
       if (e.key === 'Tab') {
         const items = element?.querySelectorAll<HTMLElement>('button, select, input');
         if (!items?.length) return;
@@ -235,6 +237,7 @@ export default function App() {
   }, [blocking]);
   useNativeEvents(() => {
     if (generating) { generation.current?.abort(); return; }
+    if (result) { leaveGame(); return; }
     if (blocking) { closeOverlays(); return; }
     if (view === 'game') leaveGame(); else if (view !== 'home') setView('home'); else minimizeNativeApp();
   }, () => setPaused(true));
@@ -297,8 +300,21 @@ export default function App() {
     </main>
     <footer inert={!!blocking}><span className="footer-brand">{t('하루 스도쿠', 'Haru Sudoku')}<span>.</span></span><p>{t('클래식과 매일 도전', 'Classic and daily challenges')}</p><a href="https://github.com/kjk0189-boop/haru-sudoku" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
     </>}
-    {blocking&&<div className={`modal-backdrop ${panel?'sheet-backdrop':''}`}><section id="game-dialog" className={`modal ${settings?'game-guide':''} ${panel?'bottom-sheet':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label={t('닫기', 'Close')} onClick={closeOverlays}><X size={20}/></button>
-      {generating && view !== 'game'?<><span className="generation-spinner"/><h2 id="modal-title">{t('게임을 준비하고 있어요', 'Preparing your game')}</h2><p>{t('정답과 난이도를 확인하고 있어요.', 'Checking the solution and difficulty.')}</p><button className="secondary" onClick={()=>generation.current?.abort()}>{t('생성 취소', 'Cancel generation')}</button></>:panel==='menu'?<>
+    {blocking&&<div className={`modal-backdrop ${panel&&!result?'sheet-backdrop':''}`}><section id="game-dialog" className={`modal ${result?'completion-modal':''} ${settings&&!result?'game-guide':''} ${panel&&!result?'bottom-sheet':''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title"><button className="modal-close icon-button" aria-label={t('닫기', 'Close')} onClick={result?leaveGame:closeOverlays}><X size={20}/></button>
+      {result?<>
+        <span className="result-mark"><Check size={27}/></span>
+        <h2 id="modal-title">{t('퍼즐을 완성했어요', 'Puzzle complete')}</h2>
+        <p className="result-mode">{session.mode==='daily'?t('매일 도전', 'Daily challenge'):t('클래식', 'Classic')}{session.mode==='daily'?` · ${session.dayKey}`:''}</p>
+        <div className="result-time"><span>{t('게임 기록', 'Your time')}</span><strong>{time(result.elapsed)}</strong></div>
+        <dl className="result-details">
+          <div><dt>{t('게임 난이도', 'Difficulty')}</dt><dd>{LABELS[result.difficulty]}</dd></div>
+          <div><dt>{t('난이도별 최고 기록', 'Best time at this difficulty')}</dt><dd>{time(result.bestSeconds)}</dd></div>
+          <div><dt>{t('힌트 사용 횟수', 'Hints used')}</dt><dd>{result.hints}{t('회', '')}</dd></div>
+          <div><dt>{t('이 난이도 완료 횟수', 'Completed at this difficulty')}</dt><dd>{result.completedCount}{t('회', '')}</dd></div>
+        </dl>
+        {saveFailed&&<p className="result-save-error" role="alert">{saveError}</p>}
+        <button data-result-home className="primary result-home" onClick={leaveGame}>{t('메인 화면으로', 'Back to home')}<ArrowRight size={17}/></button>
+      </>:generating && view !== 'game'?<><span className="generation-spinner"/><h2 id="modal-title">{t('게임을 준비하고 있어요', 'Preparing your game')}</h2><p>{t('정답과 난이도를 확인하고 있어요.', 'Checking the solution and difficulty.')}</p><button className="secondary" onClick={()=>generation.current?.abort()}>{t('생성 취소', 'Cancel generation')}</button></>:panel==='menu'?<>
         <h2 id="modal-title">{t('게임 메뉴', 'Game menu')}</h2>
         <p className="menu-description">{session.mode==='daily'?t(`${session.dayKey} 매일 도전`, `${session.dayKey} Daily challenge`):t('클래식 플레이', 'Classic game')}</p>
         <label className="field-label" htmlFor="mobile-difficulty">{t('새 게임 난이도', 'New game difficulty')}</label>

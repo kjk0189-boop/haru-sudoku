@@ -10,6 +10,7 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 - Lobby.tsx: 홈·매일 도전 달력·개인 기록 화면
 - library.ts: 클래식·날짜별 저장 분리와 기존 기록 이전
 - player.ts: 실행별 기록·완료 통계·한국 날짜와 일일 시드
+- completion.ts: 현재 완료 실행을 포함한 난이도별 결과 요약
 - access.ts: 무료 도움 및 향후 이용 정책 판단
 - i18n.tsx: 한국어·영어 컨텍스트·언어 저장·문서 언어
 - game-messages.ts: 게임 상태·논리 힌트 설명의 표시 언어 변환
@@ -35,6 +36,7 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [App.tsx](../../src/App.tsx) | [./library](../../src/library.ts) |
 | [App.tsx](../../src/App.tsx) | [./player](../../src/player.ts) |
 | [App.tsx](../../src/App.tsx) | [./access](../../src/access.ts) |
+| [App.tsx](../../src/App.tsx) | [./completion](../../src/completion.ts) |
 | [App.tsx](../../src/App.tsx) | [./i18n](../../src/i18n.tsx) |
 | [App.tsx](../../src/App.tsx) | [./game-messages](../../src/game-messages.ts) |
 | [App.tsx](../../src/App.tsx) | [./useNativeEvents](../../src/useNativeEvents.ts) |
@@ -46,6 +48,9 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [Lobby.tsx](../../src/Lobby.tsx) | [./player](../../src/player.ts) |
 | [Lobby.tsx](../../src/Lobby.tsx) | [./i18n](../../src/i18n.tsx) |
 | [Lobby.tsx](../../src/Lobby.tsx) | [./lobby.css](../../src/lobby.css) |
+| [completion.ts](../../src/completion.ts) | [./game](../../src/game.ts) |
+| [completion.ts](../../src/completion.ts) | [./player](../../src/player.ts) |
+| [completion.ts](../../src/completion.ts) | [./session](../../src/session.ts) |
 | [game-messages.ts](../../src/game-messages.ts) | [./i18n](../../src/i18n.tsx) |
 | [generator-client.ts](../../src/generator-client.ts) | [./game](../../src/game.ts) |
 | [generator-client.ts](../../src/generator-client.ts) | [./generator](../../src/generator.ts) |

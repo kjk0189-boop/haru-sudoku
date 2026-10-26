@@ -9,6 +9,7 @@
 - [앱 화면과 개인 테스트 APK](android-app.md): 홈·매일 도전·내 기록, 무료 도움 정책과 Android 설치
 - [네이비·화이트 디자인](visual-design.md): Pretendard·Manrope, 오류 색상, 설치 없는 모바일 웹 미리보기
 - [언어·이어하기·달력 상태](localization.md): 한국어/영어 선택, 진행 중 게임 재개, 완료색과 간결한 문구
+- [게임 완료 결과](completion.md): 난이도·완료 시간·최고 기록·힌트·완료 횟수와 홈 이동
 - [설계 결정](decisions.md): 선택한 방법과 이유, 대안, 제약
 - [코드 연결 구조](code-map.md): 모듈의 책임과 의존 관계
 - [검증 기록](verification.md): 실행한 검사, 결과, 미검증 사유
