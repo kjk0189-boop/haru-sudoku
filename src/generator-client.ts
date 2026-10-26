@@ -2,7 +2,7 @@ import type { Difficulty } from './game';
 import type { GeneratedPuzzle } from './generator';
 
 /** Workers are disposable so cancellation stops CPU work, not just the loading state. */
-export function requestPuzzle(difficulty: Difficulty, excludeFingerprints: string[], signal: AbortSignal): Promise<GeneratedPuzzle> {
+export function requestPuzzle(difficulty: Difficulty, excludeFingerprints: string[], signal: AbortSignal, seed?: number): Promise<GeneratedPuzzle> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) { reject(new DOMException('생성 취소', 'AbortError')); return; }
     const worker = new Worker(new URL('./generator.worker.ts', import.meta.url), { type: 'module' });
@@ -17,7 +17,7 @@ export function requestPuzzle(difficulty: Difficulty, excludeFingerprints: strin
       else reject(new Error(event.data.error ?? '선택한 난이도의 검증을 통과한 문제를 아직 찾지 못했어요. 다시 시도해 주세요.'));
     };
     worker.onerror = () => { cleanup(); reject(new Error('문제 생성기를 실행하지 못했어요. 새로고침 후 다시 시도해 주세요.')); };
-    worker.postMessage({ id: 1, difficulty, excludeFingerprints });
+    worker.postMessage({ id: 1, difficulty, excludeFingerprints, ...(seed === undefined ? {} : { seed }) });
   });
 }
 

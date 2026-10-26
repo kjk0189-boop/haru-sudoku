@@ -6,3 +6,6 @@ dist/
 !.env.example
 artifacts/
 .pnpm-store/
+*.jks
+*.keystore
+haru-sudoku-debug.apk

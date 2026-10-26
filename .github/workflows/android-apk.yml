@@ -1,0 +1,59 @@
+name: Build Android test APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install web dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify game
+        run: pnpm test
+      - name: Build bundled web app
+        run: pnpm build
+      - name: Check code graph
+        run: pnpm graph && git diff --exit-code docs/wiki/code-map.md
+      - name: Synchronize Android assets
+        run: pnpm exec cap sync android
+      - name: Ensure Android SDK platform
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Assemble personal test APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --no-daemon
+      - name: Name APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk haru-sudoku-debug.apk
+      - name: Verify APK signature and manifest
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose haru-sudoku-debug.apk
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging haru-sudoku-debug.apk
+      - name: Upload test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: haru-sudoku-debug
+          path: haru-sudoku-debug.apk
+          if-no-files-found: error
+          retention-days: 30

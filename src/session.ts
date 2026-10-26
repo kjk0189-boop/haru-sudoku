@@ -7,6 +7,12 @@ export interface Session extends Snapshot {
   version: 1; puzzleId: string; elapsed: number; hints: number; history: Snapshot[];
   puzzle?: Puzzle;
   certificate?: Rating;
+  runId?: string;
+  mode?: 'classic' | 'daily';
+  dayKey?: string;
+  startedAt?: string;
+  mistakes?: number;
+  advancedNotes?: number;
 }
 export const STORAGE_KEY = 'haru-sudoku:v1';
 /** String input is the legacy catalog API; all new game tiers pass a certified puzzle snapshot. */
@@ -48,6 +54,18 @@ export function restoreSession(raw: string | null): Session | null {
     } else puzzle = PUZZLES.find(p => p.id === value?.puzzleId);
     if (!puzzle || value.version !== 1 || !validSnapshot(value, puzzle) || !integer(value.elapsed, 31536000) || !integer(value.hints, 1000000)
       || !Array.isArray(value.history) || value.history.length > 100 || !value.history.every(s => validSnapshot(s, puzzle))) return null;
+    if ((value.runId !== undefined && (typeof value.runId !== 'string' || !value.runId || value.runId.length > 200))
+      || (value.mode !== undefined && value.mode !== 'classic' && value.mode !== 'daily')
+      || (value.startedAt !== undefined && (typeof value.startedAt !== 'string'
+        || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.startedAt)
+        || !Number.isFinite(Date.parse(value.startedAt)) || new Date(value.startedAt).toISOString() !== value.startedAt))
+      || (value.mistakes !== undefined && !integer(value.mistakes, 1000000))
+      || (value.advancedNotes !== undefined && !integer(value.advancedNotes, 1000000))) return null;
+    if (value.mode === 'daily' || value.dayKey !== undefined) {
+      if (typeof value.dayKey !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value.dayKey)) return null;
+      const date = new Date(`${value.dayKey}T00:00:00Z`);
+      if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value.dayKey) return null;
+    }
     if (certificate) return { ...value, certificate };
     return value;
   } catch { return null; }
