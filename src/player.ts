@@ -1,5 +1,6 @@
 import { isComplete, type Difficulty } from './game';
 import { puzzleFor, type Session } from './session';
+import { GENERATION_VERSION } from './difficulty-policy';
 
 export type GameMode = 'classic' | 'daily';
 export interface GameRecord {
@@ -135,7 +136,7 @@ export function koreaDayKey(now: Date = new Date()): string {
 export function dailySeed(dayKey: string): number {
   if (!validDayKey(dayKey)) throw new RangeError('올바른 날짜 키가 필요합니다.');
   let hash = 2166136261;
-  for (const character of `haru-sudoku:daily:v1:${dayKey}`) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  for (const character of `haru-sudoku:daily:v${GENERATION_VERSION}:${dayKey}`) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
   return hash >>> 0;
 }
 

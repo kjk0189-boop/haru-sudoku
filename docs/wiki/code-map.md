@@ -18,7 +18,8 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 - session.ts: 게임 상태 변경, 실행 취소, 저장 데이터 검증
 - game.ts: 문제 묶음, 후보·충돌·완성·유일해·힌트
 - policy.ts: 난이도별 힌트 제한 정책
-- logic.ts: 논리 풀이, 네 단계 평가, 설명형 힌트와 풀이 증거
+- logic.ts: 호환되는 v1 논리 인증, 설명형 힌트와 풀이 증거
+- difficulty-policy.ts: 새 문제의 v2 단서·추론·부담 지수 수용 기준
 - generator.ts: 무작위 정답판과 유일해·난이도 검증 생성
 - generator.worker.ts: 생성 작업의 백그라운드 실행
 - generator-client.ts: Worker 생명주기와 최근 문제 80개 관리
@@ -51,12 +52,15 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [completion.ts](../../src/completion.ts) | [./game](../../src/game.ts) |
 | [completion.ts](../../src/completion.ts) | [./player](../../src/player.ts) |
 | [completion.ts](../../src/completion.ts) | [./session](../../src/session.ts) |
+| [difficulty-policy.ts](../../src/difficulty-policy.ts) | [./game](../../src/game.ts) |
+| [difficulty-policy.ts](../../src/difficulty-policy.ts) | [./logic](../../src/logic.ts) |
 | [game-messages.ts](../../src/game-messages.ts) | [./i18n](../../src/i18n.tsx) |
 | [generator-client.ts](../../src/generator-client.ts) | [./game](../../src/game.ts) |
 | [generator-client.ts](../../src/generator-client.ts) | [./generator](../../src/generator.ts) |
 | [generator-client.ts](../../src/generator-client.ts) | [./generator.worker.ts](../../src/generator.worker.ts) |
 | [generator.ts](../../src/generator.ts) | [./game](../../src/game.ts) |
 | [generator.ts](../../src/generator.ts) | [./logic](../../src/logic.ts) |
+| [generator.ts](../../src/generator.ts) | [./difficulty-policy](../../src/difficulty-policy.ts) |
 | [generator.worker.ts](../../src/generator.worker.ts) | [./game](../../src/game.ts) |
 | [generator.worker.ts](../../src/generator.worker.ts) | [./generator](../../src/generator.ts) |
 | [i18n.tsx](../../src/i18n.tsx) | `react` |
@@ -70,10 +74,12 @@ codegraph 제품 도구/CLI가 없어 TypeScript AST로 import 그래프를 추�
 | [main.tsx](../../src/main.tsx) | [./style.css](../../src/style.css) |
 | [player.ts](../../src/player.ts) | [./game](../../src/game.ts) |
 | [player.ts](../../src/player.ts) | [./session](../../src/session.ts) |
+| [player.ts](../../src/player.ts) | [./difficulty-policy](../../src/difficulty-policy.ts) |
 | [policy.ts](../../src/policy.ts) | [./game](../../src/game.ts) |
 | [session.ts](../../src/session.ts) | [./game](../../src/game.ts) |
 | [session.ts](../../src/session.ts) | [./policy](../../src/policy.ts) |
 | [session.ts](../../src/session.ts) | [./logic](../../src/logic.ts) |
+| [session.ts](../../src/session.ts) | [./difficulty-policy](../../src/difficulty-policy.ts) |
 | [starter.ts](../../src/starter.ts) | [./game](../../src/game.ts) |
 | [useNativeEvents.ts](../../src/useNativeEvents.ts) | `react` |
 | [useNativeEvents.ts](../../src/useNativeEvents.ts) | `@capacitor/core` |

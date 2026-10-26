@@ -1,0 +1,560 @@
+{
+  "environment": "win32 / v24.22.1",
+  "deadlineMs": 20000,
+  "results": [
+    {
+      "difficulty": "easy",
+      "seed": 1,
+      "elapsedMs": 83,
+      "verified": true,
+      "fingerprint": "003100200050820700921000005107090000690010500080006002710003000000080300345000810",
+      "clues": 31,
+      "score": 84,
+      "techniques": {
+        "naked-single": 40,
+        "hidden-single": 10
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 2,
+      "elapsedMs": 24,
+      "verified": true,
+      "fingerprint": "090672300230850090050031204004300107000025008072000053300000402000107000000263570",
+      "clues": 36,
+      "score": 94,
+      "techniques": {
+        "naked-single": 30,
+        "hidden-single": 15
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 3,
+      "elapsedMs": 177,
+      "verified": true,
+      "fingerprint": "080000920921680000604000700006009470000050800013800000008160207560790034000000000",
+      "clues": 31,
+      "score": 87,
+      "techniques": {
+        "naked-single": 39,
+        "hidden-single": 11
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 4,
+      "elapsedMs": 51,
+      "verified": true,
+      "fingerprint": "050000070009600000000001600300760000010050004740010560070000008000090300002803040",
+      "clues": 25,
+      "score": 93,
+      "techniques": {
+        "naked-single": 45,
+        "hidden-single": 11
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 5,
+      "elapsedMs": 12,
+      "verified": true,
+      "fingerprint": "008540790000006450000009608007008036860130520000000000000903000900005064501000080",
+      "clues": 30,
+      "score": 85,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 8
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 6,
+      "elapsedMs": 11,
+      "verified": true,
+      "fingerprint": "040006900000402856070500001067305010008000003000900680009001000651000040400000160",
+      "clues": 30,
+      "score": 83,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 8
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 7,
+      "elapsedMs": 10,
+      "verified": true,
+      "fingerprint": "700000000301905800000000190020703000070059302030006080050000708090087631000600054",
+      "clues": 31,
+      "score": 81,
+      "techniques": {
+        "naked-single": 41,
+        "hidden-single": 9
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 8,
+      "elapsedMs": 10,
+      "verified": true,
+      "fingerprint": "003006120900012056210050390067100502030800600090200007680000070000004005000000800",
+      "clues": 31,
+      "score": 77,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 7
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 9,
+      "elapsedMs": 16,
+      "verified": true,
+      "fingerprint": "700000000004008360000310200800000040010000600003070900680400090021905000050000800",
+      "clues": 25,
+      "score": 72,
+      "techniques": {
+        "naked-single": 52,
+        "hidden-single": 4
+      }
+    },
+    {
+      "difficulty": "easy",
+      "seed": 10,
+      "elapsedMs": 12,
+      "verified": true,
+      "fingerprint": "005800010300040075060052000007000309010030742040500000000600500401089600002070000",
+      "clues": 29,
+      "score": 80,
+      "techniques": {
+        "naked-single": 44,
+        "hidden-single": 8
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 1,
+      "elapsedMs": 13,
+      "verified": true,
+      "fingerprint": "805200300300007008009000500000002050740000000000060039600000400400036901058009063",
+      "clues": 28,
+      "score": 129,
+      "techniques": {
+        "hidden-single": 24,
+        "naked-single": 29
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 2,
+      "elapsedMs": 106,
+      "verified": true,
+      "fingerprint": "840000290000014050007000800200005706080006005100402000000000009060500480000008500",
+      "clues": 26,
+      "score": 116,
+      "techniques": {
+        "naked-single": 38,
+        "hidden-single": 17
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 3,
+      "elapsedMs": 27,
+      "verified": true,
+      "fingerprint": "000000050600000079000417006030570100800000000050080900301004092090003715205091008",
+      "clues": 31,
+      "score": 112,
+      "techniques": {
+        "naked-single": 32,
+        "hidden-single": 18
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 4,
+      "elapsedMs": 14,
+      "verified": true,
+      "fingerprint": "003200700000500010020010000078000009600308000030100006150824000300005000807600002",
+      "clues": 27,
+      "score": 115,
+      "techniques": {
+        "naked-single": 37,
+        "hidden-single": 17
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 5,
+      "elapsedMs": 162,
+      "verified": true,
+      "fingerprint": "107030050069001007050020096506000000000063000000700000010006500000400000320008074",
+      "clues": 26,
+      "score": 113,
+      "techniques": {
+        "naked-single": 41,
+        "hidden-single": 14
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 6,
+      "elapsedMs": 92,
+      "verified": true,
+      "fingerprint": "062000000000037000000902005000216004050800067200003080370000010001000040000098000",
+      "clues": 25,
+      "score": 109,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 13
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 7,
+      "elapsedMs": 12,
+      "verified": true,
+      "fingerprint": "700000000301905800000000190020703000070059302030006080050000708090007630000600054",
+      "clues": 29,
+      "score": 101,
+      "techniques": {
+        "naked-single": 37,
+        "hidden-single": 15
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 8,
+      "elapsedMs": 48,
+      "verified": true,
+      "fingerprint": "800009024000200700030007000003540190091006000000000002000300051040050003008600900",
+      "clues": 26,
+      "score": 112,
+      "techniques": {
+        "naked-single": 40,
+        "hidden-single": 15
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 9,
+      "elapsedMs": 66,
+      "verified": true,
+      "fingerprint": "000260748804000003900080001000000020000970400090010070620000930000520000010003602",
+      "clues": 28,
+      "score": 105,
+      "techniques": {
+        "naked-single": 37,
+        "hidden-single": 16
+      }
+    },
+    {
+      "difficulty": "medium",
+      "seed": 10,
+      "elapsedMs": 15,
+      "verified": true,
+      "fingerprint": "000800010300040070060052000007000309010030740040500000000600500401089600002070000",
+      "clues": 26,
+      "score": 112,
+      "techniques": {
+        "hidden-single": 17,
+        "naked-single": 38
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 1,
+      "elapsedMs": 195,
+      "verified": true,
+      "fingerprint": "900204006006030000050009810000000908000306005200000061800040000090000000000057420",
+      "clues": 25,
+      "score": 118,
+      "techniques": {
+        "hidden-single": 10,
+        "locked-candidate": 5,
+        "naked-single": 46
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 2,
+      "elapsedMs": 23,
+      "verified": true,
+      "fingerprint": "300058060100400003500020907003005000600800200005700000000000605000000100014000000",
+      "clues": 23,
+      "score": 125,
+      "techniques": {
+        "naked-single": 45,
+        "hidden-single": 13,
+        "naked-pair": 2
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 3,
+      "elapsedMs": 19,
+      "verified": true,
+      "fingerprint": "009400000300050004000000010030780200070000089100003076500607900000300160400900500",
+      "clues": 27,
+      "score": 101,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 11,
+        "locked-candidate": 4
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 4,
+      "elapsedMs": 12,
+      "verified": true,
+      "fingerprint": "002080005006000030000740008508000070000000003040000092090500000007800006080009100",
+      "clues": 23,
+      "score": 121,
+      "techniques": {
+        "hidden-single": 15,
+        "naked-single": 43,
+        "locked-candidate": 3
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 5,
+      "elapsedMs": 24,
+      "verified": true,
+      "fingerprint": "000950300003008000980001600000190200029740003400002050007019000090600000300020094",
+      "clues": 29,
+      "score": 98,
+      "techniques": {
+        "hidden-single": 8,
+        "naked-single": 44,
+        "locked-candidate": 3
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 6,
+      "elapsedMs": 8,
+      "verified": true,
+      "fingerprint": "478020050010000090030001070007000941002470080000180600701060402300000018800003700",
+      "clues": 32,
+      "score": 84,
+      "techniques": {
+        "naked-single": 42,
+        "hidden-single": 7,
+        "locked-candidate": 1
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 7,
+      "elapsedMs": 62,
+      "verified": true,
+      "fingerprint": "700508001090402670010600080900030506860000010007060800180000004009040200074300009",
+      "clues": 32,
+      "score": 117,
+      "techniques": {
+        "naked-single": 31,
+        "hidden-single": 18,
+        "locked-candidate": 1
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 8,
+      "elapsedMs": 80,
+      "verified": true,
+      "fingerprint": "060900000900025010705060320040006000007000001300000200052000038000010007870053002",
+      "clues": 28,
+      "score": 89,
+      "techniques": {
+        "hidden-single": 8,
+        "locked-candidate": 2,
+        "naked-single": 45
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 9,
+      "elapsedMs": 28,
+      "verified": true,
+      "fingerprint": "000000074594000600000600082037400000000001006080090040000000000000013009840970023",
+      "clues": 26,
+      "score": 143,
+      "techniques": {
+        "naked-single": 39,
+        "hidden-single": 16,
+        "locked-candidate": 10
+      }
+    },
+    {
+      "difficulty": "hard",
+      "seed": 10,
+      "elapsedMs": 77,
+      "verified": true,
+      "fingerprint": "029040060000002309007009000000000002003078040080000900300705006000003001040010030",
+      "clues": 25,
+      "score": 95,
+      "techniques": {
+        "naked-single": 47,
+        "hidden-single": 9,
+        "locked-candidate": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 1,
+      "elapsedMs": 5114,
+      "verified": true,
+      "fingerprint": "010060809050004000004000037005000090000000603902070100000200068000006000100507900",
+      "clues": 25,
+      "score": 126,
+      "techniques": {
+        "naked-single": 40,
+        "hidden-single": 16,
+        "locked-candidate": 1,
+        "naked-pair": 2,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 2,
+      "elapsedMs": 1946,
+      "verified": true,
+      "fingerprint": "084002700070005003000000201920100000000200000038604900001700040090008050047500009",
+      "clues": 28,
+      "score": 111,
+      "techniques": {
+        "hidden-single": 12,
+        "naked-single": 41,
+        "locked-candidate": 7,
+        "naked-pair": 1,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 3,
+      "elapsedMs": 635,
+      "verified": true,
+      "fingerprint": "840007050000800010009050000000200100000931580180000900520300006608500000034020000",
+      "clues": 28,
+      "score": 114,
+      "techniques": {
+        "hidden-single": 13,
+        "naked-single": 40,
+        "locked-candidate": 3,
+        "x-wing": 1,
+        "naked-pair": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 4,
+      "elapsedMs": 1453,
+      "verified": true,
+      "fingerprint": "703050920450900060600704310000300000004001080200800601007090000000200500502410000",
+      "clues": 30,
+      "score": 113,
+      "techniques": {
+        "hidden-single": 12,
+        "naked-single": 39,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 5,
+      "elapsedMs": 621,
+      "verified": true,
+      "fingerprint": "743000000020805300000000600168000700000008000000290000000004570030000120205006030",
+      "clues": 25,
+      "score": 120,
+      "techniques": {
+        "naked-single": 42,
+        "hidden-single": 14,
+        "locked-candidate": 10,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 6,
+      "elapsedMs": 281,
+      "verified": true,
+      "fingerprint": "000010000284903000000007800000060000108500090763009584090000007000485009005000010",
+      "clues": 28,
+      "score": 103,
+      "techniques": {
+        "naked-single": 41,
+        "hidden-single": 12,
+        "locked-candidate": 2,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 7,
+      "elapsedMs": 4544,
+      "verified": true,
+      "fingerprint": "620000000170008000000100005000040000580200000002000680007000503030020000800706004",
+      "clues": 23,
+      "score": 145,
+      "techniques": {
+        "hidden-single": 23,
+        "locked-candidate": 8,
+        "naked-pair": 1,
+        "naked-single": 35,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 8,
+      "elapsedMs": 421,
+      "verified": true,
+      "fingerprint": "060003008007084260020970003000020001000600000008009570000000000001090806030065910",
+      "clues": 28,
+      "score": 104,
+      "techniques": {
+        "hidden-single": 13,
+        "locked-candidate": 5,
+        "naked-pair": 2,
+        "x-wing": 1,
+        "naked-single": 40
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 9,
+      "elapsedMs": 243,
+      "verified": true,
+      "fingerprint": "100090000080130409903708000040305160030029000500004392000000024000000603006050980",
+      "clues": 32,
+      "score": 133,
+      "techniques": {
+        "hidden-single": 18,
+        "naked-single": 31,
+        "locked-candidate": 2,
+        "x-wing": 1
+      }
+    },
+    {
+      "difficulty": "expert",
+      "seed": 10,
+      "elapsedMs": 2512,
+      "verified": true,
+      "fingerprint": "070010385801005702509000140100060004000102500000580010000007200700000400096050030",
+      "clues": 31,
+      "score": 91,
+      "techniques": {
+        "naked-single": 43,
+        "hidden-single": 7,
+        "naked-pair": 1,
+        "x-wing": 1
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { countSolutions, type Difficulty, type Puzzle } from './game';
 import { analyze, type Rating } from './logic';
+import { acceptsDifficulty, DIFFICULTY_BANDS, GENERATION_VERSION } from './difficulty-policy';
 
 export interface GeneratedPuzzle extends Puzzle {
   rating: Rating;
@@ -84,14 +85,13 @@ export function generatePuzzle(difficulty: Difficulty, options: GeneratorOptions
   if (!['easy', 'medium', 'hard', 'expert'].includes(difficulty)) return null;
   const seed = (options.seed ?? Math.floor(Math.random() * 4294967296)) >>> 0;
   const random = randomSource(seed);
-  // Vary the target effort inside the selected tier instead of always accepting
-  // the first dense, low-effort grid. The rating boundaries remain unchanged.
-  const effortTarget = difficulty === 'easy' ? 65 + Math.floor(random() * 30)
-    : difficulty === 'medium' ? 100 + Math.floor(random() * 15) : 0;
+  const band = DIFFICULTY_BANDS[difficulty];
+  // A randomized clue target keeps easy boards from always having the same density.
+  const clueTarget = difficulty === 'easy' ? band.minClues + Math.floor(random() * (band.maxClues - band.minClues + 1)) : band.maxClues;
   const excluded = new Set(options.excludeFingerprints ?? []);
   const duration = Math.max(0, Math.min(options.deadlineMs ?? 10000, 30000));
   const deadline = performance.now() + duration;
-  const maxAttempts = Math.max(0, Math.min(Math.floor(options.maxAttempts ?? 1000), 10000));
+  const maxAttempts = Math.max(0, Math.min(Math.floor(options.maxAttempts ?? 10000), 10000));
   for (let attempt = 0; attempt < maxAttempts && performance.now() < deadline; attempt++) {
     const solution = fullGrid(random);
     const givens = solution.slice();
@@ -105,18 +105,19 @@ export function generatePuzzle(difficulty: Difficulty, options: GeneratorOptions
         continue;
       }
       clueCount--;
-      // Advanced patterns are uncommon in dense grids. This is a search shortcut,
-      // never a grading rule: the logical solver still decides the exact tier.
-      if (clueCount > (difficulty === 'hard' || difficulty === 'expert' ? 32 : 40)) continue;
+      if (clueCount < band.minClues) break;
+      if (clueCount > clueTarget) continue;
       const rating = analyze(givens);
       if (performance.now() >= deadline) return null;
-      if (!rating.solved || rating.difficulty !== difficulty) continue;
+      // Preserve a logically solvable carving path instead of spending the
+      // remainder of this attempt deleting clues from an unsupported board.
+      if (!rating.solved) { givens[index] = value; clueCount++; continue; }
+      if (!acceptsDifficulty(difficulty, givens, rating)) continue;
       if (rating.solution.length !== 81 || rating.solution.some((value, i) => value !== solution[i])) continue;
-      if (rating.metrics.score < effortTarget) continue;
       const fingerprint = puzzleFingerprint(givens);
       if (excluded.has(fingerprint)) continue;
       return {
-        id: `gen-${seed}-${fingerprint}`,
+        id: `gen-v${GENERATION_VERSION}-${seed}-${fingerprint}`,
         difficulty, givens: givens.slice(), solution, rating, fingerprint, seed,
       };
     }

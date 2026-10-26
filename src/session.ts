@@ -1,6 +1,7 @@
 import { candidates, conflicts, countSolutions, getPuzzle, isComplete, PUZZLES, type Difficulty, type Puzzle } from './game';
 import { HINT_LIMITS, type HintLimits } from './policy';
 import { analyze, findLogicalHint, type Rating } from './logic';
+import { acceptsDifficulty } from './difficulty-policy';
 
 export interface Snapshot { board: number[]; notes: number[][] }
 export interface Session extends Snapshot {
@@ -46,9 +47,10 @@ export function restoreSession(raw: string | null): Session | null {
       if (legacy) {
         if (p.difficulty !== legacy.difficulty || p.givens.some((v, i) => v !== legacy.givens[i]) || p.solution.some((v, i) => v !== legacy.solution[i])) return null;
       } else {
-        if (!/^gen-\d+-[0-9]{81}$/.test(p.id) || !p.id.endsWith(`-${p.givens.join('')}`)) return null;
+        if (!/^gen-(?:v2-)?\d+-[0-9]{81}$/.test(p.id) || !p.id.endsWith(`-${p.givens.join('')}`)) return null;
         certificate = analyze(p.givens);
         if (!certificate.solved || certificate.difficulty !== p.difficulty || certificate.solution.some((v, i) => v !== p.solution[i]) || countSolutions(p.givens) !== 1) return null;
+        if (p.id.startsWith('gen-v2-') && !acceptsDifficulty(p.difficulty, p.givens, certificate)) return null;
       }
       puzzle = { id: p.id, difficulty: p.difficulty, givens: p.givens, solution: p.solution };
     } else puzzle = PUZZLES.find(p => p.id === value?.puzzleId);
