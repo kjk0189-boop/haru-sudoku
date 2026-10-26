@@ -26,3 +26,7 @@
 
 ## 검증
 자동 검사·실제 브라우저와 공개 반영 결과는 [검증 기록](verification.md)에 남긴다. APK의 폰트·터치·실제 Android 화면 검증은 이번 작업 범위에서 수행하지 않았다.
+
+## 화면 증거
+- [설치 없는 웹 미리보기](../assets/navy-web-preview.png)
+- [게임·버건디 오류 표시](../assets/navy-game.png)

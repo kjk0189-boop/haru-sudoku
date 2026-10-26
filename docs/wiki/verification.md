@@ -133,3 +133,9 @@
 - 실제 iframe 미리보기에서 새 쉬움 Worker 문제 생성·게임 진입·새 게임 선택창 확인. body Pretendard / cell Manrope computed style 확인. document.fonts.check는 한글 Pretendard와 게임 숫자 Manrope 모두 true. 콘솔 오류·경고 0건.
 - 중복 숫자 입력 시 관련 고정 칸과 사용자 칸에 버건디 rgb(136,62,82), 연한 오류 배경 적용 확인. 중복 없는 오답도 같은 색과 aria-invalid=true, `정답과 다름` 이름 확인. 되돌리기 후 false 복원 확인.
 - 미검증: 이번에는 새 APK를 빌드·설치하지 않았다. 기존 APK는 이전 디자인이다. 폰트 내장·UI 코드 경로를 재검토했으나 실제 Android 글꼴 렌더·터치·안전 영역은 기기가 없어 확인하지 못했다.
+
+### 공개 반영 확인
+- 구현 커밋 `6f6c8a5`, [Pages 40282581846](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40282581846) 테스트·빌드·그래프 검사·배포 성공.
+- 공개 `/preview.html`에서 실제 iframe 홈·기록·네 단계 선택창 확인. 공개 프레임의 Pretendard 한글 및 Manrope 숫자 `document.fonts.check` 모두 true, 브라우저 오류·경고 0건. 저장 게임을 덮어쓰지 않고 선택창까지만 확인했다.
+- 최종 CSS 검토에서 일시정지 중 오류 칸의 배경색까지 숨기도록 보완했고 로컬 실제 브라우저에서 숨김 이름·aria-invalid=false·동일한 배경색을 확인했다. 웹 빌드 재통과.
+- [공개 모바일 미리보기 화면](../assets/navy-web-preview.png) · [게임의 버건디 오답 표시](../assets/navy-game.png).

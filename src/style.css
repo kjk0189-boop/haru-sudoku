@@ -106,3 +106,4 @@ main{max-width:1000px;margin:auto;padding:48px 24px 20px}.intro{text-align:cente
 .timer>span,.number-pad button,.board-bottom b,.lobby-stat strong,.lobby-record-result>b,.lobby-day{font-family:var(--font-numbers);font-variant-numeric:tabular-nums}
 .cell{font-weight:400}.cell.given{font-weight:500}.cell.incorrect,.cell.conflict{color:var(--error);background:var(--error-soft)}.cell.incorrect.selected,.cell.conflict.selected{box-shadow:inset 0 0 0 2px var(--error)}
 .tools button:disabled,.number-pad button:disabled{opacity:.4}
+.board.is-paused .cell{color:transparent;background:#f3f5f8;box-shadow:none}
