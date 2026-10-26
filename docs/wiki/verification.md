@@ -139,3 +139,5 @@
 - 공개 `/preview.html`에서 실제 iframe 홈·기록·네 단계 선택창 확인. 공개 프레임의 Pretendard 한글 및 Manrope 숫자 `document.fonts.check` 모두 true, 브라우저 오류·경고 0건. 저장 게임을 덮어쓰지 않고 선택창까지만 확인했다.
 - 최종 CSS 검토에서 일시정지 중 오류 칸의 배경색까지 숨기도록 보완했고 로컬 실제 브라우저에서 숨김 이름·aria-invalid=false·동일한 배경색을 확인했다. 웹 빌드 재통과.
 - [공개 모바일 미리보기 화면](../assets/navy-web-preview.png) · [게임의 버건디 오답 표시](../assets/navy-game.png).
+
+- 최종 일시정지 색상 보완 `78cb318`도 [Pages 40282947730](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40282947730) 성공. 공개 앱에서 버전 쿼리를 붙여 최신 CSS `index-DnngRAL7.css` 로딩을 확인했다. 기존 iframe은 브라우저 캐시에 따라 직전 HTML을 잠시 유지할 수 있다.
