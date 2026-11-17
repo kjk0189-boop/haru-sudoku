@@ -1,5 +1,23 @@
 # 하루 스도쿠 인수인계
 
+## 2026-11-17 / 이 노트북에서 직접 수행한 개발 환경 준비
+
+이 절은 앞선 PC의 인계·배포 기록보다 나중에 이 노트북에서 직접 실행한 결과다.
+
+- 저장소가 없는 작업 폴더와 상위 경로를 확인한 뒤 독립된 형제 프로젝트 폴더에 새 clone. 시작 HEAD `053b4a3`, main/origin 동일, ahead/behind 0/0, 기존 사용자 변경 없음. origin과 공개 범위는 변경하지 않았다.
+- Git 2.56.0.windows.4. 기존 Node 24.22.1/pnpm 11.25.0을 보존하고, 프로젝트 밖 사용자 쓰기 가능 도구 폴더에 공식 Node 22.23.5 Windows x64(공식 SHA256 대조)와 pnpm 10.11.0 준비. 관리자 설치·환경변수/토큰/.env 생성 없음.
+- `pnpm install --frozen-lockfile` 성공(169 패키지). 일시적 registry 503은 자동 재시도로 복구. lockfile 변경 없음.
+- 요청한 `pnpm test`는 tsx가 `os.userInfo()`를 호출하면서 `uv_os_get_passwd ENOMEM`으로 테스트 본문 실행 전에 실패했다. Node 자체의 동일 API도 실패해 Windows 제한 실행 환경 문제로 분리했다. 테스트 삭제·의존성 수정·API 모킹 없이, 저장소 밖 임시 TypeScript transpileModule ESM loader로 원본 테스트 전체를 실행: 73/73 통과. 이 대체 검증을 표준 pnpm test 성공이라고 기록하지 않는다. 일반 PowerShell에서 표준 명령을 재실행할 필요가 있다.
+- `pnpm build`는 Vite 설정 번들링 시 esbuild 상위 경로 Access denied로 실패. 상위 읽기 권한 추가 후에도 동일했다. `pnpm build --configLoader native`는 TypeScript 검사와 Vite 빌드 모두 통과(1600모듈). 소스·vite.config.ts 변경 없음.
+- `pnpm graph` 성공: 19모듈·56연결. `git diff --exit-code -- docs/wiki/code-map.md` 및 lockfile diff 모두 0. codegraph CLI/연결 도구가 없어 **TypeScript AST import 그래프 대체 도구**를 사용했다.
+- `pnpm dev`는 같은 esbuild 접근 문제로 실패. native 설정 로더에서는 서버가 잠시 시작됐지만 의존성 사전 번들링에서 같은 오류로 종료했다. 이를 정상 dev 서버라고 보고하지 않는다.
+- 대안으로 `pnpm preview --configLoader native --port 5173` 실행 중. http://127.0.0.1:5173/ 및 /preview.html, 생성 JS/CSS HTTP 200 확인. 빌드 결과 미리보기이며 소스 변경 후 재빌드 필요.
+- 브라우저 도구는 loopback origin 접근 승인이 거절되어 기본 화면·iframe 렌더·실제 메뉴·모바일 화면·터치 검증을 진행하지 못했다. 브라우저에서 위 두 URL을 직접 열어 확인한다. HTTP 200을 UI 검증으로 대신하지 않는다. 기존 localStorage를 읽거나 초기화·교체하지 않았다.
+- Android Studio/JDK/SDK 설치·APK 빌드는 요청 범위 밖으로 미수행. docs/SETUP.md에 JDK21·SDK36·Capacitor sync·Gradle/CI 절차가 있음을 확인했다. 게임 기록은 브라우저/앱 데이터이므로 Git clone으로 이전되지 않는다.
+- GitHub 연결 로그인과 기존 작성자가 일치함을 확인해 저장소 로컬 작성자 설정만 적용. 터미널 Git은 schannel 자격 증명 처리 실패로 `-c http.sslBackend=openssl` 일회성 옵션을 사용해 clone했다. 터미널 push dry-run은 wincredman 접근 실패·비대화형 username 오류. 연결된 GitHub 도구로 문서만 반영 후 원격과 로컬 동기화 여부를 실제 확인한다. 토큰·개인 키는 출력/저장하지 않았다.
+- 변경 범위: HANDOFF.md, docs/SETUP.md, docs/wiki/verification.md, docs/wiki/development-log.md, docs/wiki/changes.md. 구현·워크플로 변경 없음. main 문서 반영은 기존 Pages workflow를 촉발할 수 있으나 이번 작업에서 호스팅 설정·공개 범위·Android 배포는 변경하지 않는다.
+- 다음 작업: 일반 PowerShell에서 Node22/pnpm10으로 `pnpm test`, `pnpm build`, `pnpm dev`를 재실행하고 브라우저 두 화면 및 모바일을 확인한다. 과거 40문제 감사와 실기기 검증은 이번 재실행하지 않았다.
+
 기준일: 2026-11-17. 저장소 기준 상대 경로를 사용한다. 새 작업은 이 문서, `AGENTS.md`, `git status --short --branch`, `docs/wiki/index.md`부터 확인한다.
 
 ## 목적과 현재 목표

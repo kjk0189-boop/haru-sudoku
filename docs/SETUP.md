@@ -69,3 +69,11 @@ macOS/Linux에서는 `cd android` 후 `./gradlew :app:assembleDebug --no-daemon`
 이 프로젝트는 MCP·Codex 스킬·codegraph 제품 설치 없이 실행/검증할 수 있다. 이번 환경에는 codegraph CLI나 연결 도구가 없어 `pnpm graph`의 **TypeScript AST import 그래프 대체 도구**를 사용했다. `scripts/codegraph.mjs`는 TypeScript 의존성 설치 후 동작하며 `docs/wiki/code-map.md`를 생성한다. 정적 import와 Worker URL 연결을 다루며 런타임 호출은 분석하지 않는다.
 
 새 환경에서 실제 codegraph 도구가 제공되면 해당 설치의 공식 안내에 따라 연결하고 구조 분석에 사용하되, CI가 요구하는 `pnpm graph`는 계속 실행한다. 특정 codegraph 패키지나 설치 명령은 확인되지 않아 추정해 지정하지 않는다. GitHub MCP나 브라우저 자동화는 선택 사항이며 사용 시 새 노트북에서 별도로 로그인·권한 연결한다. 기존 PC의 MCP 설정·토큰은 복사하거나 커밋하지 않는다. Codex 사용 시 저장소의 AGENTS.md를 읽고, 필요한 스킬은 새 환경에서 제공되는 지침을 따른다.
+
+## 이 노트북의 제한된 Codex 실행 환경 (2026-11-17)
+
+Node 22.23.5·pnpm 10.11.0으로 frozen 설치와 그래프 비교를 확인했다. 일반 `pnpm test`는 Windows 사용자 정보 조회 오류, 기본 Vite 설정 로더는 esbuild 상위 경로 접근 오류로 이 앱 안에서 실패했다. 프로젝트 소스/lockfile을 수정하지 않았다. 일반 PowerShell에서는 먼저 위 표준 명령을 재실행한다.
+
+이 앱의 빌드는 `pnpm build --configLoader native`로 통과했고, 빌드 결과 실행은 `pnpm preview --configLoader native --port 5173`이다. 이는 `pnpm dev`의 HMR 개발 서버를 대신 완료했다는 뜻이 아니다. 소스 수정 후 다시 빌드한다. 원본 73개 테스트는 저장소 밖 임시 TypeScript ESM 변환 로더로 통과했으며 상세 범위는 [검증 기록](wiki/verification.md)에 있다. 해당 임시 로더는 프로젝트 필수 도구가 아니다.
+
+GitHub 앱 연결과 터미널 Git Credential Manager 인증은 별개다. clone 시 Windows schannel 자격 증명 오류가 나면 인증서 검증을 끄지 않고 `git -c http.sslBackend=openssl clone <저장소 주소>`로 같은 HTTPS 주소를 사용할 수 있다. 이 옵션은 전역 설정이나 원격 주소를 바꾸지 않는다.
