@@ -4,6 +4,9 @@
 
 **[지금 플레이하기](https://kjk0189-boop.github.io/haru-sudoku/)** · [배포 상태](https://github.com/kjk0189-boop/haru-sudoku/actions)
 
+다른 노트북에서 개발을 시작할 때는 [인수인계](HANDOFF.md)와 [설치 안내](docs/SETUP.md)를 먼저 읽는다.
+설치 없이 모바일 화면을 확인하려면 [웹 미리보기](https://kjk0189-boop.github.io/haru-sudoku/preview.html)를 연다.
+
 - [LLM 위키](docs/wiki/index.md)
 - [기획](docs/wiki/product.md)
 - [난이도·자동 생성 기준](docs/wiki/difficulty.md)

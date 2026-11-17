@@ -191,3 +191,11 @@
 - 구현 `755f6af`, [Pages 40294484130](https://github.com/kjk0189-boop/haru-sudoku/actions/runs/40294484130) 테스트·빌드·그래프 검사·배포 성공.
 - 공개 preview.html?v=755f6af의 자식 경로와 최신 index-Z_YfT0xZ.js 로드 및 홈 표시 확인. 공개 generator.worker-0r42Equz.js의 SHA256 `A2965CA30D0B174574C970DB44B1D1CDE75B63827B9D284C569E77DF17771799`가 로컬 검증 빌드와 일치한다.
 - 공개 사용자의 진행을 교체하지 않기 위해 공개 새 게임은 생성하지 않았다. 실제 네 단계 Worker 생성·메모 복원은 별도 로컬 포트의 배포 빌드에서 검증했고 공개에서는 동일 자산의 반영을 확인했다.
+
+## 2026-11-17 / 인수인계 준비 재검증
+
+- 작업 시작 Git: main/17bcf88, 미커밋 없음. fetch 후 HEAD...origin/main=0/0. GitHub API private=false 확인, 기존 주소·공개 범위 보존.
+- Node24.22.1의 기존 node_modules에서 직접 CLI 실행: `node node_modules/tsx/dist/cli.mjs --test tests/*.test.ts` 73/73, `node node_modules/typescript/bin/tsc -b`, `node node_modules/vite/bin/vite.js build` 통과.
+- `node scripts/codegraph.mjs` 19모듈/56연결, `git diff --exit-code -- docs/wiki/code-map.md` 통과. 실제 codegraph CLI/연결 도구는 없어 TypeScript AST 대체 도구 사용.
+- `git ls-files --cached --ignored --exclude-standard` 출력 없음. 추적 경로의 환경변수/서명/의존성/출력물 검사와 제한된 민감정보 패턴의 파일명 전용 검사 일치 없음. 완전한 비밀 탐지 보증은 아니며 스테이징 diff를 추가 검토한다.
+- 미검증: 새 노트북의 clean install, CI와 같은 Node22/pnpm10 로컬 설치, 실제 Android 기기/JDK/SDK는 현재 환경에 없어 미수행. 정확한 준비/검사 절차는 `../SETUP.md`, 현재 상태는 `../../HANDOFF.md` 참고. 게임 코드 변경이 없어 40문제 감사·브라우저 UI/휴대폰 검사를 이번에 반복하지 않았다. 과거 증거와 이번 검증을 구분한다.

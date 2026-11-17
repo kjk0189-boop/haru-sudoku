@@ -9,3 +9,20 @@ artifacts/
 *.jks
 *.keystore
 haru-sudoku-debug.apk
+
+# Machine-specific settings, credentials and build output
+.idea/
+.vscode/
+.codex/
+.agents/
+.DS_Store
+Thumbs.db
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+*.apk
+*.aab
+key.properties
+keystore.properties
